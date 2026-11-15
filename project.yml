@@ -1,0 +1,59 @@
+name: WorkoutLogger
+options:
+  bundleIdPrefix: com.saad
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  WorkoutLogger:
+    type: application
+    platform: iOS
+    sources:
+      - WorkoutLogger
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.saad.workoutlogger
+        PRODUCT_NAME: WorkoutLogger
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: WorkoutLogger
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UIRequiresFullScreen: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        ENABLE_PREVIEWS: YES
+  WorkoutLoggerTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - WorkoutLoggerTests
+    dependencies:
+      - target: WorkoutLogger
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.saad.workoutlogger.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/WorkoutLogger.app/WorkoutLogger"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+schemes:
+  WorkoutLogger:
+    build:
+      targets:
+        WorkoutLogger: all
+        WorkoutLoggerTests: [test]
+    test:
+      config: Debug
+      targets:
+        - WorkoutLoggerTests
+    run:
+      config: Debug
+    archive:
+      config: Release
