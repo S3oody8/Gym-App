@@ -14,6 +14,8 @@ enum DebugScenario: String {
     case historyDetail
     case historyDeleteFromDetail
     case templatePicker
+    case progress
+    case exerciseProgress
     case exercises
     case exerciseEditor
 
@@ -29,12 +31,29 @@ enum DebugScenario: String {
         #endif
     }()
 
+    /// Graph metric to open with (`-metric e1RM|top|volume`), Debug only.
+    static let initialMetric: ProgressMetric? = {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        guard let index = args.firstIndex(of: "-metric"), args.indices.contains(index + 1) else { return nil }
+        switch args[index + 1] {
+        case "top": return .topSet
+        case "volume": return .volume
+        default: return .e1RM
+        }
+        #else
+        return nil
+        #endif
+    }()
+
     var initialTab: AppTab {
         switch self {
         case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert: .workout
         case .settings: .settings
         case .history, .historyDetail, .historyDeleteFromDetail: .history
         case .templatePicker: .workout
+        case .progress: .progress
+        case .exerciseProgress: .exercises
         case .exercises, .exerciseEditor: .exercises
         }
     }

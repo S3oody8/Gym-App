@@ -9,11 +9,13 @@ struct ExerciseCardSection: View {
     private static let rowInsets = EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 4)
 
     var body: some View {
+        let badges = viewModel.prBadges(for: entry)
         Section {
             ForEach(Array(entry.orderedSets.enumerated()), id: \.element.id) { index, set in
                 SetRowView(
                     number: index + 1,
                     values: set.values,
+                    badges: badges[set.id] ?? [],
                     lastText: viewModel.lastText(for: entry, index: index),
                     onEdit: { viewModel.openEdit(set, in: entry) },
                     onDelete: { viewModel.deleteSet(set, from: entry) }

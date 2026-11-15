@@ -9,10 +9,14 @@ struct ExercisesTabView: View {
     @State private var editing: Exercise?
     @State private var isAdding = false
     @State private var pendingDelete: Exercise?
+    @State private var path: [Exercise] = []
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             list
+                .navigationDestination(for: Exercise.self) { exercise in
+                    ExerciseProgressView(exercise: exercise)
+                }
                 .navigationTitle("Exercises")
                 .searchable(text: $viewModel.searchText, prompt: "Search exercises")
                 .toolbar {
@@ -61,6 +65,10 @@ struct ExercisesTabView: View {
                     if DebugScenario.current == .exerciseEditor, editing == nil {
                         editing = exercises.first { $0.hasHistory && !$0.isArchived }
                     }
+                    if DebugScenario.current == .exerciseProgress, path.isEmpty,
+                       let bench = exercises.first(where: { $0.name == "Bench Press" }) {
+                        path = [bench]
+                    }
                 }
         }
     }
@@ -106,12 +114,13 @@ struct ExercisesTabView: View {
     }
 
     private func row(_ exercise: Exercise) -> some View {
-        Button {
-            editing = exercise
-        } label: {
+        NavigationLink(value: exercise) {
             ExerciseRowView(exercise: exercise)
         }
-        .tint(.primary)
+        .swipeActions(edge: .leading) {
+            Button("Edit", systemImage: "pencil") { editing = exercise }
+                .tint(.blue)
+        }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if exercise.isArchived {
                 Button("Unarchive", systemImage: "tray.and.arrow.up") {

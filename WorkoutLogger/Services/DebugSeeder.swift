@@ -32,9 +32,31 @@ enum DebugSeeder {
             add([(82.5, 8), (82.5, 7), (82.5, 6)], of: bench, order: 0, to: current, start: start)
             current.entries.first?.sets.append(WorkoutSet(order: 3, weight: 60, reps: 10, type: .drop,
                                                           loggedAt: start.addingTimeInterval(600)))
-            add([(65, 10), (65, 9)], of: pulldown, order: 1, to: current, start: start.addingTimeInterval(900))
+            add([(65, 11), (65, 9)], of: pulldown, order: 1, to: current, start: start.addingTimeInterval(900))
         case .exercises, .exerciseEditor:
             break
+        case .progress, .exerciseProgress:
+            let day = 86_400.0
+            for i in 0..<16 {
+                let date = Date.now.addingTimeInterval(-Double(100 - i * 6) * day - 3600)
+                let anterior = i % 2 == 0
+                let session = WorkoutSession(name: anterior ? "Anterior" : "Posterior", startedAt: date)
+                context.insert(session)
+                let step = Double(i / 2)
+                if anterior {
+                    let w = 70 + (step * 1.25 / 2.5).rounded() * 2.5
+                    add([(w, 8 + i % 3), (w, 7 + i % 2), (w - 10, 10)], of: bench, order: 0, to: session,
+                        start: date.addingTimeInterval(300))
+                    add([(55 + step * 2.5, 10), (55 + step * 2.5, 9)], of: pulldown, order: 1,
+                        to: session, start: date.addingTimeInterval(1500))
+                } else {
+                    add([(90 + step * 5, 6), (90 + step * 5, 5)], of: smith, order: 0, to: session,
+                        start: date.addingTimeInterval(300))
+                    add([(12 + step, 12), (12 + step, 10)], of: curl, order: 1, to: session,
+                        start: date.addingTimeInterval(1500))
+                }
+                session.finishedAt = date.addingTimeInterval(3000)
+            }
         case .history, .historyDetail, .historyDeleteFromDetail, .templatePicker:
             let day = 86_400.0
             let older = WorkoutSession(name: "Posterior", startedAt: lastWeek.addingTimeInterval(-3 * day))

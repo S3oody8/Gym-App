@@ -81,6 +81,13 @@ final class SessionEditorViewModel {
             .map { "Last: " + WeightFormatter.compact(weight: $0.weight, reps: $0.reps) }
     }
 
+    /// PR badges for this entry's sets, computed from the exercise's whole history so edits
+    /// anywhere are reflected immediately.
+    func prBadges(for entry: SessionExercise) -> [UUID: PRBadges] {
+        guard let exercise = entry.exercise else { return [:] }
+        return PRDetector.badges(for: ProgressQueries.prInputs(for: exercise))
+    }
+
     func canQuickAdd(_ entry: SessionExercise) -> Bool {
         !entry.sets.isEmpty
     }
