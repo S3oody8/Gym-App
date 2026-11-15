@@ -31,7 +31,7 @@ final class ActiveWorkoutTests: XCTestCase {
 
     func testEverySetChangeIsPersisted() throws {
         let session = try store.startSession()
-        let vm = ActiveWorkoutViewModel(session: session, context: context)
+        let vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.addExercise(bench)
         let entry = try XCTUnwrap(session.orderedEntries.first)
 
@@ -53,7 +53,7 @@ final class ActiveWorkoutTests: XCTestCase {
 
     func testQuickAddNeedsASetInThisSession() throws {
         let session = try store.startSession()
-        let vm = ActiveWorkoutViewModel(session: session, context: context)
+        let vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.addExercise(bench)
         let entry = try XCTUnwrap(session.orderedEntries.first)
         XCTAssertFalse(vm.canQuickAdd(entry))
@@ -63,7 +63,7 @@ final class ActiveWorkoutTests: XCTestCase {
 
     func testUndoAddEditDelete() throws {
         let session = try store.startSession()
-        let vm = ActiveWorkoutViewModel(session: session, context: context)
+        let vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.addExercise(bench)
         let entry = try XCTUnwrap(session.orderedEntries.first)
         vm.submit(SetValues(weight: 80, reps: 8), for: request(entry))
@@ -91,7 +91,7 @@ final class ActiveWorkoutTests: XCTestCase {
 
     func testRemoveExerciseAndUndo() throws {
         let session = try store.startSession()
-        let vm = ActiveWorkoutViewModel(session: session, context: context)
+        let vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         let row = Exercise(name: "Row", primary: .upperBack, equipment: .cable)
         context.insert(row)
         vm.addExercise(bench)
@@ -124,7 +124,7 @@ final class ActiveWorkoutTests: XCTestCase {
         try context.save()
 
         let session = try store.startSession()
-        let vm = ActiveWorkoutViewModel(session: session, context: context)
+        let vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.addExercise(bench)
         let entry = try XCTUnwrap(session.orderedEntries.first)
         XCTAssertEqual(vm.lastText(for: entry, index: 0), "Last: 80×8")
@@ -141,7 +141,7 @@ final class ActiveWorkoutTests: XCTestCase {
 
     func testDiscardEmptyWorkout() throws {
         let session = try store.startSession()
-        let vm = ActiveWorkoutViewModel(session: session, context: context)
+        let vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.discard()
         XCTAssertEqual(try context.fetchCount(FetchDescriptor<WorkoutSession>()), 0)
     }

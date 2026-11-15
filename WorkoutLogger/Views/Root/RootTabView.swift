@@ -2,23 +2,20 @@ import SwiftData
 import SwiftUI
 import UIKit
 
-/// Top-level tabs. Shows a "Resume workout" banner on launch if a workout was left active,
-/// and keeps the screen awake while a workout is active.
+/// Top-level tabs. While a workout is active, a "Resume workout" banner shows on every tab
+/// except Workout, and the screen is kept awake.
 struct RootTabView: View {
     @Query(filter: #Predicate<WorkoutSession> { $0.finishedAt == nil })
     private var activeSessions: [WorkoutSession]
     @State private var selection: AppTab = DebugScenario.current?.initialTab ?? .workout
-    @State private var didCheckResume = false
-    @State private var showResumeBanner = false
 
     private var hasActiveWorkout: Bool { !activeSessions.isEmpty }
 
     var body: some View {
         VStack(spacing: 0) {
-            if showResumeBanner && hasActiveWorkout {
+            if hasActiveWorkout && selection != .workout {
                 ResumeWorkoutBanner(startedAt: activeSessions.first?.startedAt) {
                     selection = .workout
-                    showResumeBanner = false
                 }
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
@@ -40,15 +37,9 @@ struct RootTabView: View {
                 }
             }
         }
-        .animation(.default, value: showResumeBanner)
-        .onAppear {
-            guard !didCheckResume else { return }
-            didCheckResume = true
-            showResumeBanner = hasActiveWorkout
-        }
+        .animation(.default, value: selection)
         .onChange(of: hasActiveWorkout, initial: true) { _, active in
             UIApplication.shared.isIdleTimerDisabled = active
-            if !active { showResumeBanner = false }
         }
     }
 }

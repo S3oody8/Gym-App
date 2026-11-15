@@ -9,6 +9,8 @@ import SwiftData
 final class ActiveWorkoutViewModel {
     let session: WorkoutSession
     private let store: WorkoutStore
+    private let restAlerts: RestAlertScheduling
+    private let settings: () -> RestAlertSettings
 
     /// Last undoable action, shown in the toast while non-nil.
     private(set) var undoAction: WorkoutUndoAction?
@@ -23,12 +25,39 @@ final class ActiveWorkoutViewModel {
     private var toastTask: Task<Void, Never>?
     static let toastDuration: Duration = .seconds(5)
 
-    init(session: WorkoutSession, context: ModelContext) {
+    init(
+        session: WorkoutSession,
+        context: ModelContext,
+        restAlerts: RestAlertScheduling? = nil,
+        settings: @escaping () -> RestAlertSettings = { RestAlertSettings.current() }
+    ) {
         self.session = session
         self.store = WorkoutStore(context: context)
+        self.restAlerts = restAlerts ?? RestAlertNotifier.shared
+        self.settings = settings
     }
 
     var totalSets: Int { session.allSets.count }
+
+    // MARK: Rest timer
+
+    /// Time the most recent set was logged; the rest stopwatch counts up from here.
+    var lastSetAt: Date? {
+        session.allSets.map(\.loggedAt).max()
+    }
+
+    /// Re-aligns the pending rest alert with the latest set (after add / delete / undo),
+    /// using the current settings. Edits don't call this, so settings changes only take
+    /// effect from the next rest period.
+    private func syncRestAlert(now: Date = .now) {
+        let current = settings()
+        if let date = RestTimerMath.fireDate(lastSetAt: lastSetAt, alertSeconds: current.seconds,
+                                             enabled: current.enabled, now: now) {
+            restAlerts.schedule(at: date, restSeconds: current.seconds)
+        } else {
+            restAlerts.cancel()
+        }
+    }
 
     // MARK: Lookups
 
@@ -65,6 +94,7 @@ final class ActiveWorkoutViewModel {
             let snapshot = try store.remove(entry, from: session)
             showUndo(.removedEntry(snapshot))
         }
+        syncRestAlert()
     }
 
     // MARK: Sets
@@ -116,6 +146,7 @@ final class ActiveWorkoutViewModel {
             let snapshot = try store.delete(set, from: entry)
             showUndo(.deletedSet(entryID: entry.id, snapshot: snapshot))
         }
+        syncRestAlert()
     }
 
     private func addSet(_ values: SetValues, to entry: SessionExercise) {
@@ -124,6 +155,7 @@ final class ActiveWorkoutViewModel {
             addedSetCount += 1
             showUndo(.addedSet(setID: set.id))
         }
+        syncRestAlert()
     }
 
     // MARK: Undo
@@ -145,6 +177,7 @@ final class ActiveWorkoutViewModel {
                 try store.restore(snapshot, into: session)
             }
         }
+        syncRestAlert()
     }
 
     func dismissUndo() {
@@ -165,10 +198,12 @@ final class ActiveWorkoutViewModel {
     // MARK: Finish
 
     func finish() {
+        restAlerts.cancel()
         perform { try store.finish(session) }
     }
 
     func discard() {
+        restAlerts.cancel()
         perform { try store.discard(session) }
     }
 

@@ -1,11 +1,13 @@
 import SwiftData
 import SwiftUI
+import UserNotifications
 
 @main
 struct WorkoutLoggerApp: App {
     let container: ModelContainer
 
     init() {
+        UNUserNotificationCenter.current().delegate = NotificationPresenter.shared
         do {
             if let scenario = DebugScenario.current {
                 container = try ModelSchema.makeContainer(inMemory: true)

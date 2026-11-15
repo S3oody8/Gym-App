@@ -79,6 +79,8 @@ struct ActiveWorkoutView: View {
                 UndoToastView(message: action.message, onUndo: viewModel.undo)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
+            RestTimerView(lastSetAt: viewModel.lastSetAt)
+                .frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: 12) {
                 Button {
                     showPicker = true

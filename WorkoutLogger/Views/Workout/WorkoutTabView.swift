@@ -41,6 +41,10 @@ struct WorkoutTabView: View {
         .safeAreaInset(edge: .bottom) {
             Button {
                 do {
+                    if UserDefaults.standard.object(forKey: SettingsKeys.restAlertEnabled) as? Bool
+                        ?? SettingsKeys.defaultRestAlertEnabled {
+                        RestAlertNotifier.shared.requestAuthorization()
+                    }
                     try WorkoutStore(context: context).startSession()
                 } catch {
                     startError = error.localizedDescription

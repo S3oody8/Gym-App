@@ -6,6 +6,7 @@ struct SetEntrySheet: View {
     let onSave: (SetValues) -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var form: SetEntryForm
+    @State private var contentHeight: CGFloat = 600
 
     init(request: SetEntryRequest, onSave: @escaping (SetValues) -> Void) {
         self.request = request
@@ -16,7 +17,6 @@ struct SetEntrySheet: View {
     var body: some View {
         VStack(spacing: 12) {
             header
-            Spacer(minLength: 0)
             HStack(spacing: 8) {
                 stepButton(up: false)
                 SetEntryFieldBox(title: "Weight (kg)", text: form.weightText, placeholder: "0",
@@ -52,7 +52,10 @@ struct SetEntrySheet: View {
         .padding(.horizontal)
         .padding(.top, 16)
         .padding(.bottom, 8)
-        .presentationDetents([.large])
+        .fixedSize(horizontal: false, vertical: true)
+        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { contentHeight = $0 }
+        .frame(maxHeight: .infinity, alignment: .top)
+        .presentationDetents([.height(contentHeight)])
         .presentationDragIndicator(.visible)
     }
 
