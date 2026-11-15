@@ -11,6 +11,7 @@ struct ExerciseDraft: Equatable, Sendable {
 
     enum ValidationError: Error, Equatable {
         case emptyName
+        case duplicateName
         case invalidIncrement
     }
 
@@ -32,16 +33,25 @@ struct ExerciseDraft: Equatable, Sendable {
         MuscleGroup.allCases.filter { secondary.contains($0) && $0 != primary }
     }
 
-    func validate() -> ValidationError? {
+    /// Normalised key for duplicate detection: trimmed, case-insensitive.
+    static func nameKey(_ name: String) -> String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    }
+
+    /// `existingNames` are the names of all *other* exercises (archived included).
+    func validate(existingNames: [String] = []) -> ValidationError? {
         if trimmedName.isEmpty { return .emptyName }
+        let key = Self.nameKey(trimmedName)
+        if existingNames.contains(where: { Self.nameKey($0) == key }) { return .duplicateName }
         if increment == nil { return .invalidIncrement }
         return nil
     }
 
-    var isValid: Bool { validate() == nil }
+    func isValid(existingNames: [String] = []) -> Bool {
+        validate(existingNames: existingNames) == nil
+    }
 
-    /// Formats a kg value without trailing zeros, e.g. 2.5 → "2.5", 5 → "5".
     static func format(_ value: Double) -> String {
-        value.formatted(.number.precision(.fractionLength(0...2)).locale(Locale(identifier: "en_US_POSIX")))
+        WeightFormatter.string(value)
     }
 }

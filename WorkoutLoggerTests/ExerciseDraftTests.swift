@@ -14,6 +14,14 @@ final class ExerciseDraftTests: XCTestCase {
         }
     }
 
+    func testDuplicateNamesAreBlockedCaseInsensitiveAndTrimmed() {
+        let draft = ExerciseDraft(name: "  bench press ", incrementText: "2.5")
+        XCTAssertEqual(draft.validate(existingNames: ["Bench Press"]), .duplicateName)
+        XCTAssertEqual(draft.validate(existingNames: [" BENCH PRESS"]), .duplicateName)
+        XCTAssertNil(draft.validate(existingNames: ["Bench Press – Incline"]))
+        XCTAssertNil(draft.validate(existingNames: []))
+    }
+
     func testIncrementAcceptsCommaDecimal() {
         XCTAssertEqual(ExerciseDraft(incrementText: "1,25").increment, 1.25)
         XCTAssertEqual(ExerciseDraft(incrementText: "5").increment, 5)

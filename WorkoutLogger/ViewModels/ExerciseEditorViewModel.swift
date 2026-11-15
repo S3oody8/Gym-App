@@ -7,7 +7,8 @@ import SwiftData
 @Observable
 final class ExerciseEditorViewModel {
     var draft: ExerciseDraft
-    private let exercise: Exercise?
+    var saveErrorMessage: String?
+    let exercise: Exercise?
 
     var isNew: Bool { exercise == nil }
     var title: String { isNew ? "New Exercise" : "Edit Exercise" }
@@ -27,10 +28,21 @@ final class ExerciseEditorViewModel {
         }
     }
 
-    /// Writes the draft to the store. Returns false if the draft is invalid.
+    /// Names of every other exercise (archived included), for duplicate detection.
+    func otherNames(from all: [Exercise]) -> [String] {
+        all.filter { $0.id != exercise?.id }.map(\.name)
+    }
+
+    func validationError(among all: [Exercise]) -> ExerciseDraft.ValidationError? {
+        draft.validate(existingNames: otherNames(from: all))
+    }
+
+    /// Writes the draft to the store. Returns false if invalid or if saving failed
+    /// (then `saveErrorMessage` is set).
     @discardableResult
     func save(in context: ModelContext) -> Bool {
-        guard draft.isValid, let increment = draft.increment else { return false }
+        let all = (try? context.fetch(FetchDescriptor<Exercise>())) ?? []
+        guard validationError(among: all) == nil, let increment = draft.increment else { return false }
         let target: Exercise
         if let exercise {
             target = exercise
@@ -43,7 +55,12 @@ final class ExerciseEditorViewModel {
         target.secondary = draft.cleanedSecondary
         target.equipment = draft.equipment
         target.weightIncrement = increment
-        try? context.save()
-        return true
+        do {
+            try context.save()
+            return true
+        } catch {
+            saveErrorMessage = error.localizedDescription
+            return false
+        }
     }
 }

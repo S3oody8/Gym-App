@@ -32,6 +32,25 @@ final class ExerciseLibraryTests: XCTestCase {
         XCTAssertEqual(saved.name, "Seated Cable Row")
     }
 
+    func testEditorRejectsDuplicateNameButAllowsKeepingOwnName() throws {
+        let existing = Exercise(name: "Bench Press", primary: .chest, equipment: .barbell)
+        let archived = Exercise(name: "Old Row", primary: .upperBack, equipment: .machine, isArchived: true)
+        context.insert(existing)
+        context.insert(archived)
+        try context.save()
+
+        let vm = ExerciseEditorViewModel()
+        vm.draft = ExerciseDraft(name: "bench press ", incrementText: "2.5")
+        XCTAssertFalse(vm.save(in: context))
+        vm.draft.name = "old row"
+        XCTAssertFalse(vm.save(in: context), "archived names count too")
+        XCTAssertEqual(try context.fetchCount(FetchDescriptor<Exercise>()), 2)
+
+        let edit = ExerciseEditorViewModel(exercise: existing)
+        edit.draft.name = "BENCH PRESS"
+        XCTAssertTrue(edit.save(in: context), "an exercise doesn't clash with itself")
+    }
+
     func testInvalidDraftIsNotSaved() throws {
         let vm = ExerciseEditorViewModel()
         vm.draft.name = ""

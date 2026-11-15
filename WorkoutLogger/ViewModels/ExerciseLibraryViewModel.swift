@@ -2,12 +2,13 @@ import Foundation
 import Observation
 import SwiftData
 
-/// Delete / archive actions for the exercise library.
+/// Search plus delete / archive actions for the exercise library.
 @MainActor
 @Observable
 final class ExerciseLibraryViewModel {
     var searchText: String = ""
     var showArchived: Bool = false
+    var saveErrorMessage: String?
 
     func visibleActive(_ all: [Exercise]) -> [Exercise] {
         ExerciseSearch.filter(all, query: searchText, name: \.name, isArchived: \.isArchived)
@@ -20,7 +21,7 @@ final class ExerciseLibraryViewModel {
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
     }
 
-    /// Deletes an exercise only if it has no history. Returns false otherwise.
+    /// Deletes an exercise only if it has no history. Returns false otherwise or on save failure.
     @discardableResult
     func delete(_ exercise: Exercise, in context: ModelContext) -> Bool {
         guard !exercise.hasHistory else { return false }
@@ -28,12 +29,22 @@ final class ExerciseLibraryViewModel {
             context.delete(item)
         }
         context.delete(exercise)
-        try? context.save()
-        return true
+        return persist(context)
     }
 
-    func setArchived(_ archived: Bool, for exercise: Exercise, in context: ModelContext) {
+    @discardableResult
+    func setArchived(_ archived: Bool, for exercise: Exercise, in context: ModelContext) -> Bool {
         exercise.isArchived = archived
-        try? context.save()
+        return persist(context)
+    }
+
+    private func persist(_ context: ModelContext) -> Bool {
+        do {
+            try context.save()
+            return true
+        } catch {
+            saveErrorMessage = error.localizedDescription
+            return false
+        }
     }
 }

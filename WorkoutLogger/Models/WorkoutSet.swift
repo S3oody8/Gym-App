@@ -40,4 +40,14 @@ final class WorkoutSet {
         get { SetType(rawValue: typeRaw) ?? .working }
         set { typeRaw = newValue.rawValue }
     }
+
+    var values: SetValues {
+        get { SetValues(weight: weight, reps: reps, rir: rir, type: type) }
+        set {
+            weight = newValue.weight
+            reps = newValue.reps
+            rir = newValue.rir
+            type = newValue.type
+        }
+    }
 }

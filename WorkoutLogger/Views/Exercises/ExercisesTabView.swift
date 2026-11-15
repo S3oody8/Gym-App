@@ -49,6 +49,19 @@ struct ExercisesTabView: View {
                 } message: {
                     Text("This exercise has no history. It will also be removed from any templates. This can't be undone.")
                 }
+                .alert("Couldn't save", isPresented: Binding(
+                    get: { viewModel.saveErrorMessage != nil },
+                    set: { if !$0 { viewModel.saveErrorMessage = nil } }
+                )) {
+                    Button("OK", role: .cancel) {}
+                } message: {
+                    Text(viewModel.saveErrorMessage ?? "")
+                }
+                .onAppear {
+                    if DebugScenario.current == .exerciseEditor, editing == nil {
+                        editing = exercises.first { $0.hasHistory && !$0.isArchived }
+                    }
+                }
         }
     }
 
