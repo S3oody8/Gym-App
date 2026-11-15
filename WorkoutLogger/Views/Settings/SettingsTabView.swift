@@ -29,6 +29,8 @@ struct SettingsTabView: View {
                         Text("The rest timer always counts. The alert sends a notification once per rest period. Changes apply from the next rest period.")
                     }
                 }
+
+                DataSettingsSection()
             }
             .navigationTitle("Settings")
             .onChange(of: restAlertEnabled) { _, enabled in

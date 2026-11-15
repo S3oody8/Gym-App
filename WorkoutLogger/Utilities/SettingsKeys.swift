@@ -9,4 +9,5 @@ enum SettingsKeys {
 
     static let defaultRestAlertEnabled = true
     static let defaultRestAlertSeconds = 180
+    static let defaultBackupReminderEnabled = true
 }

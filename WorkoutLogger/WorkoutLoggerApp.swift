@@ -23,6 +23,9 @@ struct WorkoutLoggerApp: App {
     var body: some Scene {
         WindowGroup {
             RootTabView()
+                .task {
+                    if DebugScenario.current == nil { BackupReminder.sync(enabled: BackupReminder.isEnabled) }
+                }
         }
         .modelContainer(container)
     }
