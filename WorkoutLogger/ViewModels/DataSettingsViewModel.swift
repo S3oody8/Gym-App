@@ -9,6 +9,30 @@ final class DataSettingsViewModel {
     var jsonDocument: JSONBackupDocument?
     var csvDocument: CSVExportDocument?
     var isImportingJSON = false
+    /// True when the file picker is choosing a Shrug CSV rather than a JSON backup.
+    var importingShrug = false
+    /// Text of the chosen Shrug file; non-nil presents the import sheet.
+    var shrugText: ShrugFileText?
+
+    /// Identifiable wrapper so the import sheet gets a fresh view model per file.
+    struct ShrugFileText: Identifiable {
+        let id = UUID()
+        let text: String
+    }
+
+    func loadShrug(_ url: URL) {
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        do {
+            let data = try Data(contentsOf: url)
+            guard let text = String(data: data, encoding: .utf8) ?? String(data: data, encoding: .isoLatin1) else {
+                throw CocoaError(.fileReadInapplicableStringEncoding)
+            }
+            shrugText = ShrugFileText(text: text)
+        } catch {
+            show("Import failed", error.localizedDescription)
+        }
+    }
     /// Message for the result alert (success or failure).
     var alertTitle = ""
     var alertMessage: String?

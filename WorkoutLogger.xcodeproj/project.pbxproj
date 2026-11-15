@@ -37,6 +37,7 @@
 		399D8440FF4B2A1604EFAA60 /* TemplateExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D7D8C95125F6682C26718B5 /* TemplateExercise.swift */; };
 		3ACABB26C4E7207B5EF98C71 /* ExerciseCardSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79FB1D379305A37AA6EF6DEC /* ExerciseCardSection.swift */; };
 		3B478A1FE775B6F9A5D14030 /* SessionMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B21408ADF5080E31F785632 /* SessionMetrics.swift */; };
+		3D272BD796DFE81C28C4CAE9 /* DataSettingsPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F49564ADE23163E7955CE0A6 /* DataSettingsPresentation.swift */; };
 		3DE0D1E4F0A46FA7FBC1B583 /* PRDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4903CD0A3C512D9A6A9CBD14 /* PRDetector.swift */; };
 		3E6390B27D4757975D565037 /* SetEntryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 438830CE93309469526F9777 /* SetEntryField.swift */; };
 		41EC67AFA606DC21543C8B40 /* SetValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA87A73F6C30ECC4EF6D302 /* SetValues.swift */; };
@@ -265,6 +266,7 @@
 		F176884555E2363136BD5978 /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		F1AF10C94959393E1CEAF3E5 /* SetEntryRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEntryRequest.swift; sourceTree = "<group>"; };
 		F32A97FF634239C0A45F4BD0 /* CSVRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVRow.swift; sourceTree = "<group>"; };
+		F49564ADE23163E7955CE0A6 /* DataSettingsPresentation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSettingsPresentation.swift; sourceTree = "<group>"; };
 		F4F8B52B08D09EB3904A3845 /* ProgressRoute.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRoute.swift; sourceTree = "<group>"; };
 		F79CFF31B3CB8D66D35A640B /* ProgressRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressRange.swift; sourceTree = "<group>"; };
 		F91CC47326A5BC2CE98CBBBD /* ShrugRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugRow.swift; sourceTree = "<group>"; };
@@ -331,6 +333,7 @@
 		48BB5A8A4B9CCDCF3CF0BE65 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				F49564ADE23163E7955CE0A6 /* DataSettingsPresentation.swift */,
 				C8B219D534811E67A44D02BD /* DataSettingsSection.swift */,
 				AA454D5588FC596A98CCA425 /* RestAlertTimePicker.swift */,
 				84695D8BBDA24C541A8389E3 /* SettingsTabView.swift */,
@@ -672,6 +675,7 @@
 				1962DF02CDB84B81B5540EA3 /* CSVExporter.swift in Sources */,
 				1336837931C859B705C63712 /* CSVRow.swift in Sources */,
 				48E4FA9D03323E3FCF009206 /* CalendarMath.swift in Sources */,
+				3D272BD796DFE81C28C4CAE9 /* DataSettingsPresentation.swift in Sources */,
 				D0A3ADFE359B2D900D075F64 /* DataSettingsSection.swift in Sources */,
 				4754B7868AF9C74C81329E83 /* DataSettingsViewModel.swift in Sources */,
 				ECFF7E72C051CE36E55182FD /* DebugScenario.swift in Sources */,

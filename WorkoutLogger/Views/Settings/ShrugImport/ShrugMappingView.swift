@@ -105,11 +105,12 @@ struct ShrugMappingView: View {
     }
 
     private func example(_ info: ShrugExerciseInfo) -> String {
-        guard let lb = info.poundExample else { return "\(info.poundRows) lb rows" }
+        let rows = "\(info.poundRows) lb row\(info.poundRows == 1 ? "" : "s")"
+        guard let lb = info.poundExample else { return rows }
         let shown = viewModel.convertsPounds(info.name)
             ? "\(WeightFormatter.string(lb)) lb → \(WeightFormatter.string(ShrugImportPlanner.kilograms(fromPounds: lb))) kg"
             : "\(WeightFormatter.string(lb)) kg"
-        return "\(info.poundRows) lb rows · e.g. \(shown)"
+        return "\(rows) · e.g. \(shown)"
     }
 
     private func exerciseRow(_ info: ShrugExerciseInfo) -> some View {

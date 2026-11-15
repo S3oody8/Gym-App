@@ -8,6 +8,7 @@ struct SettingsTabView: View {
     @AppStorage(SettingsKeys.restAlertSeconds)
     private var restAlertSeconds = SettingsKeys.defaultRestAlertSeconds
     @State private var notificationsDenied = false
+    @State private var dataViewModel = DataSettingsViewModel()
 
     var body: some View {
         NavigationStack {
@@ -30,8 +31,9 @@ struct SettingsTabView: View {
                     }
                 }
 
-                DataSettingsSection()
+                DataSettingsSection(viewModel: dataViewModel)
             }
+            .modifier(DataSettingsPresentation(viewModel: dataViewModel))
             .navigationTitle("Settings")
             .onChange(of: restAlertEnabled) { _, enabled in
                 if enabled {
