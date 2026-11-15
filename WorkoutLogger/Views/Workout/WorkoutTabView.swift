@@ -10,6 +10,7 @@ struct WorkoutTabView: View {
     )
     private var activeSessions: [WorkoutSession]
     @State private var startError: String?
+    @State private var showTemplates = DebugScenario.current == .templatePicker
 
     var body: some View {
         NavigationStack {
@@ -39,23 +40,41 @@ struct WorkoutTabView: View {
         )
         .navigationTitle("Workout")
         .safeAreaInset(edge: .bottom) {
-            Button {
-                do {
-                    if UserDefaults.standard.object(forKey: SettingsKeys.restAlertEnabled) as? Bool
-                        ?? SettingsKeys.defaultRestAlertEnabled {
-                        RestAlertNotifier.shared.requestAuthorization()
-                    }
-                    try WorkoutStore(context: context).startSession()
-                } catch {
-                    startError = error.localizedDescription
+            VStack(spacing: 12) {
+                Button {
+                    showTemplates = true
+                } label: {
+                    Text("Start from Template")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, minHeight: 50)
                 }
-            } label: {
-                Text("Start Workout")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, minHeight: 50)
+                .buttonStyle(.bordered)
+                Button {
+                    start { try $0.startSession() }
+                } label: {
+                    Text("Start Workout")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, minHeight: 50)
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
             .padding()
+        }
+        .sheet(isPresented: $showTemplates) {
+            TemplatePickerView { template in
+                start { try $0.startSession(from: template) }
+            }
+        }
+    }
+
+    private func start(_ action: (WorkoutStore) throws -> WorkoutSession) {
+        if RestAlertSettings.current().enabled {
+            RestAlertNotifier.shared.requestAuthorization()
+        }
+        do {
+            _ = try action(WorkoutStore(context: context))
+        } catch {
+            startError = error.localizedDescription
         }
     }
 }

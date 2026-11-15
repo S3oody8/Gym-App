@@ -10,6 +10,10 @@ enum DebugScenario: String {
     case workoutRemoveUndo
     case restAlert
     case settings
+    case history
+    case historyDetail
+    case historyDeleteFromDetail
+    case templatePicker
     case exercises
     case exerciseEditor
 
@@ -29,6 +33,8 @@ enum DebugScenario: String {
         switch self {
         case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert: .workout
         case .settings: .settings
+        case .history, .historyDetail, .historyDeleteFromDetail: .history
+        case .templatePicker: .workout
         case .exercises, .exerciseEditor: .exercises
         }
     }

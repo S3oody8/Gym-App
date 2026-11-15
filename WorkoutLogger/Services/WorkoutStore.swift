@@ -40,6 +40,95 @@ struct WorkoutStore {
         try save()
     }
 
+    /// Moves a session to a new start time, shifting finish time and every set time by the
+    /// same amount so duration and set spacing are preserved.
+    func move(_ session: WorkoutSession, toStart date: Date) throws {
+        let delta = date.timeIntervalSince(session.startedAt)
+        session.startedAt = date
+        session.finishedAt = session.finishedAt?.addingTimeInterval(delta)
+        for set in session.allSets {
+            set.loggedAt = set.loggedAt.addingTimeInterval(delta)
+        }
+        try save()
+    }
+
+    /// Deletes a session with everything in it and returns a snapshot for undo.
+    @discardableResult
+    func deleteSession(_ session: WorkoutSession) throws -> SessionSnapshot {
+        let snapshot = SessionSnapshot(
+            id: session.id,
+            startedAt: session.startedAt,
+            finishedAt: session.finishedAt,
+            entries: session.orderedEntries.map { entry in
+                EntrySnapshot(id: entry.id, order: entry.order, exerciseID: entry.exercise?.id,
+                              sets: entry.orderedSets.map(Self.snapshot))
+            }
+        )
+        context.delete(session)
+        try save()
+        return snapshot
+    }
+
+    @discardableResult
+    func restoreSession(_ snapshot: SessionSnapshot) throws -> WorkoutSession {
+        let session = WorkoutSession(id: snapshot.id, startedAt: snapshot.startedAt,
+                                     finishedAt: snapshot.finishedAt)
+        context.insert(session)
+        for entrySnapshot in snapshot.entries {
+            let entry = SessionExercise(id: entrySnapshot.id, order: entrySnapshot.order,
+                                        exercise: entrySnapshot.exerciseID.flatMap(exercise(withID:)))
+            session.entries.append(entry)
+            for set in entrySnapshot.sets {
+                entry.sets.append(Self.makeSet(from: set))
+            }
+        }
+        try save()
+        return session
+    }
+
+    // MARK: Templates
+
+    /// Saves the session's exercise list and order (no sets, weights or reps) as a template.
+    @discardableResult
+    func saveTemplate(from session: WorkoutSession, name: String) throws -> WorkoutTemplate {
+        let ids = TemplatePlan.exerciseIDs(from: session.entries.map { ($0.order, $0.exercise?.id) })
+        let byID = Dictionary(session.entries.compactMap(\.exercise).map { ($0.id, $0) },
+                              uniquingKeysWith: { first, _ in first })
+        let template = WorkoutTemplate(name: name)
+        context.insert(template)
+        for (index, id) in ids.enumerated() {
+            template.items.append(TemplateExercise(order: index, exercise: byID[id]))
+        }
+        try save()
+        return template
+    }
+
+    /// Starts a new live workout with the template's exercises in order and no sets.
+    @discardableResult
+    func startSession(from template: WorkoutTemplate, at date: Date = .now) throws -> WorkoutSession {
+        let session = WorkoutSession(startedAt: date)
+        context.insert(session)
+        let exercises = template.orderedItems.compactMap(\.exercise)
+        for (index, exercise) in exercises.enumerated() {
+            session.entries.append(SessionExercise(order: index, exercise: exercise))
+        }
+        try save()
+        return session
+    }
+
+    func deleteTemplate(_ template: WorkoutTemplate) throws {
+        context.delete(template)
+        try save()
+    }
+
+    func deleteTemplate(withID id: UUID) throws {
+        var descriptor = FetchDescriptor<WorkoutTemplate>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        if let template = try context.fetch(descriptor).first {
+            try deleteTemplate(template)
+        }
+    }
+
     // MARK: Entries
 
     @discardableResult

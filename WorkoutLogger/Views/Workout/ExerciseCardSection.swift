@@ -3,7 +3,7 @@ import SwiftUI
 /// One exercise in the active workout: its sets plus the add-set controls.
 struct ExerciseCardSection: View {
     let entry: SessionExercise
-    let viewModel: ActiveWorkoutViewModel
+    let viewModel: SessionEditorViewModel
 
     var body: some View {
         Section {

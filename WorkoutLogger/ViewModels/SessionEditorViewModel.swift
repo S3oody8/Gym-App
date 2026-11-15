@@ -2,11 +2,12 @@ import Foundation
 import Observation
 import SwiftData
 
-/// Drives the active workout screen: adding exercises and sets, the set pop-up, undo,
-/// and surfacing failed saves.
+/// Edits a session — the live workout or a finished one from History: adding exercises and
+/// sets, the set pop-up, undo, moving the date/time, saving as a template, and surfacing
+/// failed saves. Rest alerts are only managed for the live workout.
 @MainActor
 @Observable
-final class ActiveWorkoutViewModel {
+final class SessionEditorViewModel {
     let session: WorkoutSession
     private let store: WorkoutStore
     private let restAlerts: RestAlertScheduling
@@ -39,6 +40,9 @@ final class ActiveWorkoutViewModel {
 
     var totalSets: Int { session.allSets.count }
 
+    /// True for the in-progress workout, false for a finished session being edited.
+    var isLive: Bool { session.isActive }
+
     // MARK: Rest timer
 
     /// Time the most recent set was logged; the rest stopwatch counts up from here.
@@ -50,6 +54,7 @@ final class ActiveWorkoutViewModel {
     /// using the current settings. Edits don't call this, so settings changes only take
     /// effect from the next rest period.
     private func syncRestAlert(now: Date = .now) {
+        guard isLive else { return }
         let current = settings()
         if let date = RestTimerMath.fireDate(lastSetAt: lastSetAt, alertSeconds: current.seconds,
                                              enabled: current.enabled, now: now) {
@@ -151,7 +156,10 @@ final class ActiveWorkoutViewModel {
 
     private func addSet(_ values: SetValues, to entry: SessionExercise) {
         perform {
-            let set = try store.addSet(values, to: entry)
+            // A set added to a past session gets that session's latest set time, so its
+            // duration isn't stretched to "now".
+            let date = isLive ? Date.now : (lastSetAt ?? session.startedAt)
+            let set = try store.addSet(values, to: entry, at: date)
             addedSetCount += 1
             showUndo(.addedSet(setID: set.id))
         }
@@ -175,6 +183,10 @@ final class ActiveWorkoutViewModel {
                 if let entry = entry(withID: entryID) { try store.remove(entry, from: session) }
             case .removedEntry(let snapshot):
                 try store.restore(snapshot, into: session)
+            case .movedSession(let previousStart):
+                try store.move(session, toStart: previousStart)
+            case .savedTemplate(let templateID):
+                try store.deleteTemplate(withID: templateID)
             }
         }
         syncRestAlert()
@@ -192,6 +204,31 @@ final class ActiveWorkoutViewModel {
             try? await Task.sleep(for: Self.toastDuration)
             guard !Task.isCancelled else { return }
             self?.undoAction = nil
+        }
+    }
+
+    // MARK: Date / template
+
+    /// Moves the session (and all its set times) so it starts at `date`. Duration is unchanged.
+    func moveStart(to date: Date) {
+        let previous = session.startedAt
+        guard date != previous else { return }
+        perform {
+            try store.move(session, toStart: date)
+            showUndo(.movedSession(previousStart: previous))
+        }
+    }
+
+    var canSaveTemplate: Bool {
+        session.entries.contains { $0.exercise != nil }
+    }
+
+    func saveTemplate(named name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        perform {
+            let template = try store.saveTemplate(from: session, name: trimmed)
+            showUndo(.savedTemplate(templateID: template.id))
         }
     }
 

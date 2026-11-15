@@ -53,7 +53,7 @@ final class RestAlertSchedulingTests: XCTestCase {
     private var context: ModelContext { container.mainContext }
     private var fake: FakeRestAlerts!
     private var settings = RestAlertSettings(enabled: true, seconds: 180)
-    private var vm: ActiveWorkoutViewModel!
+    private var vm: SessionEditorViewModel!
     private var entry: SessionExercise!
 
     override func setUp() async throws {
@@ -62,7 +62,7 @@ final class RestAlertSchedulingTests: XCTestCase {
         context.insert(bench)
         let session = try WorkoutStore(context: context).startSession()
         fake = FakeRestAlerts()
-        vm = ActiveWorkoutViewModel(session: session, context: context, restAlerts: fake,
+        vm = SessionEditorViewModel(session: session, context: context, restAlerts: fake,
                                     settings: { [unowned self] in self.settings })
         vm.addExercise(bench)
         entry = session.orderedEntries.first

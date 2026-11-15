@@ -7,6 +7,8 @@ enum WorkoutUndoAction: Equatable, Sendable {
     case deletedSet(entryID: UUID, snapshot: SetSnapshot)
     case addedEntry(entryID: UUID)
     case removedEntry(EntrySnapshot)
+    case movedSession(previousStart: Date)
+    case savedTemplate(templateID: UUID)
 
     var message: String {
         switch self {
@@ -15,6 +17,8 @@ enum WorkoutUndoAction: Equatable, Sendable {
         case .deletedSet: "Set deleted"
         case .addedEntry: "Exercise added"
         case .removedEntry: "Exercise removed"
+        case .movedSession: "Date changed"
+        case .savedTemplate: "Template saved"
         }
     }
 }

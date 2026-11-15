@@ -4,12 +4,13 @@ import UserNotifications
 
 /// The live workout: exercise cards with sets, quick-add buttons, undo toast and bottom actions.
 struct ActiveWorkoutView: View {
-    @State private var viewModel: ActiveWorkoutViewModel
+    @State private var viewModel: SessionEditorViewModel
     @State private var showPicker = false
+    @State private var showSaveTemplate = false
     @State private var confirmFinish = false
 
     init(session: WorkoutSession, context: ModelContext) {
-        _viewModel = State(initialValue: ActiveWorkoutViewModel(session: session, context: context))
+        _viewModel = State(initialValue: SessionEditorViewModel(session: session, context: context))
     }
 
     private var session: WorkoutSession { viewModel.session }
@@ -36,16 +37,21 @@ struct ActiveWorkoutView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomBar
         }
-        .sheet(isPresented: $showPicker) {
-            ExercisePickerView { exercise in
-                viewModel.addExercise(exercise)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button("Save as Template", systemImage: "square.and.arrow.down") {
+                        showSaveTemplate = true
+                    }
+                    .disabled(!viewModel.canSaveTemplate)
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+                .accessibilityLabel("Workout options")
             }
         }
-        .sheet(item: $viewModel.entryRequest) { request in
-            SetEntrySheet(request: request) { values in
-                viewModel.submit(values, for: request)
-            }
-        }
+        .modifier(SessionEditingModifier(viewModel: viewModel, showPicker: $showPicker,
+                                         showSaveTemplate: $showSaveTemplate))
         .confirmationDialog(finishTitle, isPresented: $confirmFinish, titleVisibility: .visible) {
             if viewModel.totalSets == 0 {
                 Button("Discard Workout", role: .destructive) { viewModel.discard() }
@@ -57,16 +63,6 @@ struct ActiveWorkoutView: View {
                 Text("No sets were logged, so the workout won't be saved.")
             }
         }
-        .alert("Couldn't save", isPresented: Binding(
-            get: { viewModel.saveErrorMessage != nil },
-            set: { if !$0 { viewModel.saveErrorMessage = nil } }
-        )) {
-            Button("Retry") { viewModel.retrySave() }
-            Button("Dismiss", role: .cancel) {}
-        } message: {
-            Text("Your last change is not saved yet and may be lost if the app closes.\n\n\(viewModel.saveErrorMessage ?? "")")
-        }
-        .sensoryFeedback(.impact(weight: .medium), trigger: viewModel.addedSetCount)
         .onAppear(perform: openDebugPopupIfNeeded)
     }
 

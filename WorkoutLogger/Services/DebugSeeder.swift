@@ -36,6 +36,31 @@ enum DebugSeeder {
             add([(65, 10)], of: pulldown, order: 1, to: current, start: start.addingTimeInterval(900))
         case .exercises, .exerciseEditor:
             break
+        case .history, .historyDetail, .historyDeleteFromDetail, .templatePicker:
+            let day = 86_400.0
+            let older = WorkoutSession(startedAt: lastWeek.addingTimeInterval(-3 * day))
+            context.insert(older)
+            add([(100, 5), (100, 5), (100, 4)], of: smith, order: 0, to: older,
+                start: older.startedAt.addingTimeInterval(300))
+            add([(14, 12), (14, 10)], of: curl, order: 1, to: older,
+                start: older.startedAt.addingTimeInterval(1500))
+            older.finishedAt = older.startedAt.addingTimeInterval(2700)
+            let recent = WorkoutSession(startedAt: Date.now.addingTimeInterval(-2 * day))
+            context.insert(recent)
+            add([(82.5, 8), (82.5, 7), (82.5, 6)], of: bench, order: 0, to: recent,
+                start: recent.startedAt.addingTimeInterval(240))
+            add([(70, 10), (70, 9)], of: pulldown, order: 1, to: recent,
+                start: recent.startedAt.addingTimeInterval(1500))
+            recent.entries.first?.sets.last?.type = .drop
+            recent.finishedAt = recent.startedAt.addingTimeInterval(3600)
+            let push = WorkoutTemplate(name: "Upper A")
+            context.insert(push)
+            for (i, ex) in [bench, pulldown, curl].enumerated() {
+                push.items.append(TemplateExercise(order: i, exercise: ex))
+            }
+            let legs = WorkoutTemplate(name: "Lower A")
+            context.insert(legs)
+            legs.items.append(TemplateExercise(order: 0, exercise: smith))
         }
         try? context.save()
         #endif
