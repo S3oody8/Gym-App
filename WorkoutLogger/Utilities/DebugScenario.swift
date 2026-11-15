@@ -6,6 +6,8 @@ enum DebugScenario: String {
     case workoutEmpty
     case workoutMid
     case workoutPopup
+    case workoutDiscard
+    case workoutRemoveUndo
     case exercises
     case exerciseEditor
 
@@ -23,7 +25,7 @@ enum DebugScenario: String {
 
     var initialTab: AppTab {
         switch self {
-        case .workoutEmpty, .workoutMid, .workoutPopup: .workout
+        case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo: .workout
         case .exercises, .exerciseEditor: .exercises
         }
     }

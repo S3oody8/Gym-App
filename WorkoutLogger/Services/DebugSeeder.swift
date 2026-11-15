@@ -26,9 +26,9 @@ enum DebugSeeder {
         add([(60, 6)], of: oldRow, order: 2, to: past, start: lastWeek)
 
         switch scenario {
-        case .workoutEmpty:
+        case .workoutEmpty, .workoutDiscard:
             context.insert(WorkoutSession(startedAt: .now.addingTimeInterval(-120)))
-        case .workoutMid, .workoutPopup:
+        case .workoutMid, .workoutPopup, .workoutRemoveUndo:
             let start = Date.now.addingTimeInterval(-25 * 60)
             let current = WorkoutSession(startedAt: start)
             context.insert(current)

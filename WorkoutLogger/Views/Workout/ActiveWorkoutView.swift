@@ -105,9 +105,25 @@ struct ActiveWorkoutView: View {
         .animation(.snappy, value: viewModel.undoAction)
     }
 
+    /// Debug-only scenarios used to screenshot and smoke-test flows (no-op in Release).
     private func openDebugPopupIfNeeded() {
-        guard DebugScenario.current == .workoutPopup,
-              let entry = session.orderedEntries.first else { return }
-        viewModel.openAddSet(for: entry)
+        switch DebugScenario.current {
+        case .workoutPopup:
+            if let entry = session.orderedEntries.first { viewModel.openAddSet(for: entry) }
+        case .workoutDiscard:
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                viewModel.discard()
+            }
+        case .workoutRemoveUndo:
+            Task {
+                try? await Task.sleep(for: .seconds(1))
+                if let entry = session.orderedEntries.first { viewModel.removeEntry(entry) }
+                try? await Task.sleep(for: .seconds(1))
+                viewModel.undo()
+            }
+        default:
+            break
+        }
     }
 }
