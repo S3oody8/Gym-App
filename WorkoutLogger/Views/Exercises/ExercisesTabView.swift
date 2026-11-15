@@ -47,7 +47,7 @@ struct ExercisesTabView: View {
                         pendingDelete = nil
                     }
                 } message: {
-                    Text("This exercise has no history. This can't be undone.")
+                    Text("This exercise has no history. It will also be removed from any templates. This can't be undone.")
                 }
         }
     }
@@ -67,6 +67,13 @@ struct ExercisesTabView: View {
             }
         } else if active.isEmpty && archived.isEmpty && !viewModel.searchText.isEmpty {
             ContentUnavailableView.search(text: viewModel.searchText)
+        } else if active.isEmpty && archived.isEmpty {
+            ContentUnavailableView {
+                Label("All Exercises Archived", systemImage: "archivebox")
+            } actions: {
+                Button("Show Archived") { viewModel.showArchived = true }
+                    .buttonStyle(.borderedProminent)
+            }
         } else {
             List {
                 Section {

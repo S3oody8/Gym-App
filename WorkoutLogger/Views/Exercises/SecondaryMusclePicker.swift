@@ -20,7 +20,7 @@ struct SecondaryMusclePicker: View {
                         Spacer()
                         if selection.contains(muscle) {
                             Image(systemName: "checkmark")
-                                .foregroundStyle(.tint)
+                                .foregroundStyle(Color.accentColor)
                         }
                     }
                     .contentShape(Rectangle())
