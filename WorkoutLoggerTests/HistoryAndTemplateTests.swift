@@ -26,8 +26,8 @@ final class HistoryAndTemplateTests: XCTestCase {
 
     override func setUp() async throws {
         container = try ModelSchema.makeContainer(inMemory: true)
-        bench = Exercise(name: "Bench", primary: .chest, equipment: .barbell)
-        row = Exercise(name: "Row", primary: .upperBack, equipment: .cable)
+        bench = Exercise(name: "Bench", equipment: .barbell)
+        row = Exercise(name: "Row", equipment: .cable)
         context.insert(bench)
         context.insert(row)
         try context.save()

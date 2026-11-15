@@ -13,13 +13,10 @@ final class ExerciseLibraryTests: XCTestCase {
 
     func testCreateAndEditViaEditor() throws {
         let vm = ExerciseEditorViewModel()
-        vm.draft = ExerciseDraft(name: " Cable Row ", primary: .upperBack,
-                                 secondary: [.biceps, .upperBack], equipment: .cable, incrementText: "5")
+        vm.draft = ExerciseDraft(name: " Cable Row ", equipment: .cable, incrementText: "5")
         XCTAssertTrue(vm.save(in: context))
         let saved = try XCTUnwrap(try context.fetch(FetchDescriptor<Exercise>()).first)
         XCTAssertEqual(saved.name, "Cable Row")
-        XCTAssertEqual(saved.primary, .upperBack)
-        XCTAssertEqual(saved.secondary, [.biceps])
         XCTAssertEqual(saved.equipment, .cable)
         XCTAssertEqual(saved.weightIncrement, 5)
         XCTAssertFalse(saved.isArchived)
@@ -33,8 +30,8 @@ final class ExerciseLibraryTests: XCTestCase {
     }
 
     func testEditorRejectsDuplicateNameButAllowsKeepingOwnName() throws {
-        let existing = Exercise(name: "Bench Press", primary: .chest, equipment: .barbell)
-        let archived = Exercise(name: "Old Row", primary: .upperBack, equipment: .machine, isArchived: true)
+        let existing = Exercise(name: "Bench Press", equipment: .barbell)
+        let archived = Exercise(name: "Old Row", equipment: .machine, isArchived: true)
         context.insert(existing)
         context.insert(archived)
         try context.save()
@@ -59,7 +56,7 @@ final class ExerciseLibraryTests: XCTestCase {
     }
 
     func testDeleteWithoutHistoryRemovesExerciseAndTemplateItems() throws {
-        let ex = Exercise(name: "Curl", primary: .biceps, equipment: .dumbbell)
+        let ex = Exercise(name: "Curl", equipment: .dumbbell)
         context.insert(ex)
         let template = WorkoutTemplate(name: "Arms")
         context.insert(template)
@@ -73,7 +70,7 @@ final class ExerciseLibraryTests: XCTestCase {
     }
 
     func testExerciseWithHistoryCannotBeDeletedButCanBeArchived() throws {
-        let ex = Exercise(name: "Squat", primary: .quads, equipment: .barbell)
+        let ex = Exercise(name: "Squat", equipment: .barbell)
         context.insert(ex)
         let session = WorkoutSession()
         context.insert(session)

@@ -27,23 +27,13 @@ final class ExerciseDraftTests: XCTestCase {
         XCTAssertEqual(ExerciseDraft(incrementText: "5").increment, 5)
     }
 
-    func testCleanedSecondaryDropsPrimaryAndKeepsEnumOrder() {
-        let draft = ExerciseDraft(primary: .chest, secondary: [.triceps, .chest, .frontDelts])
-        XCTAssertEqual(draft.cleanedSecondary, [.frontDelts, .triceps])
-    }
-
     func testFormat() {
         XCTAssertEqual(ExerciseDraft.format(2.5), "2.5")
         XCTAssertEqual(ExerciseDraft.format(5), "5")
         XCTAssertEqual(ExerciseDraft.format(1.25), "1.25")
     }
 
-    func testMuscleRawValuesAreStable() {
-        XCTAssertEqual(MuscleGroup.allCases.map(\.rawValue), [
-            "Chest", "Lats", "Upper Back", "Lower Back", "Traps", "Front Delts", "Side Delts",
-            "Rear Delts", "Biceps", "Triceps", "Forearms", "Abs", "Quads", "Hamstrings",
-            "Glutes", "Adductors", "Calves",
-        ])
+    func testEquipmentRawValuesAreStable() {
         XCTAssertEqual(Equipment.allCases.map(\.rawValue),
                        ["Smith", "Machine", "Cable", "Dumbbell", "Barbell", "Bodyweight"])
     }

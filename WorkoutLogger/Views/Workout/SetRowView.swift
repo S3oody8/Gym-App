@@ -1,41 +1,54 @@
 import SwiftUI
 
-/// A logged set: number, weight × reps, RIR, drop badge, and last session's matching set.
+/// Slim set row: number circle, weight and reps (big number, small grey unit), RIR/Drop tags,
+/// last session's matching set, and a ⋯ menu (Edit / Delete). Tapping the row also edits.
 struct SetRowView: View {
     let number: Int
     let values: SetValues
     let lastText: String?
+    let onEdit: () -> Void
+    let onDelete: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
-            Text("\(number)")
-                .font(.subheadline.monospacedDigit().weight(.semibold))
-                .foregroundStyle(.secondary)
-                .frame(minWidth: 20)
-            Text("\(WeightFormatter.string(values.weight)) kg × \(values.reps)")
-                .font(.body.monospacedDigit().weight(.medium))
-            if let rir = values.rir {
-                Text("RIR \(rir)")
-                    .font(.caption)
+        HStack(spacing: 10) {
+            HStack(spacing: 10) {
+                Text("\(number)")
+                    .font(.caption.weight(.semibold).monospacedDigit())
+                    .frame(minWidth: 22, minHeight: 22)
+                    .background(Circle().fill(Color(.tertiarySystemFill)))
+                ValueUnitText(value: WeightFormatter.string(values.weight), unit: "kg")
+                ValueUnitText(value: "\(values.reps)", unit: values.reps == 1 ? "rep" : "reps")
+                if let rir = values.rir {
+                    TagText(text: "RIR \(rir)")
+                }
+                if values.type == .drop {
+                    TagText(text: "Drop")
+                }
+                Spacer(minLength: 4)
+                if let lastText {
+                    Text(lastText)
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture(perform: onEdit)
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isButton)
+            .accessibilityHint("Edit set")
+
+            Menu {
+                Button("Edit", systemImage: "pencil", action: onEdit)
+                Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .frame(width: 32, height: 32)
+                    .contentShape(Rectangle())
             }
-            if values.type == .drop {
-                Text("Drop")
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.quaternary, in: Capsule())
-            }
-            Spacer(minLength: 8)
-            if let lastText {
-                Text(lastText)
-                    .font(.caption.monospacedDigit())
-                    .foregroundStyle(.secondary)
-            }
+            .accessibilityLabel("Set \(number) options")
         }
-        .frame(minHeight: 36)
-        .contentShape(Rectangle())
-        .accessibilityElement(children: .combine)
-        .accessibilityHint("Tap to edit")
     }
 }

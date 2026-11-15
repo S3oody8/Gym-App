@@ -2,12 +2,15 @@ import SwiftData
 import SwiftUI
 import UserNotifications
 
-/// The live workout: exercise cards with sets, quick-add buttons, undo toast and bottom actions.
+/// The live workout: name, exercise sections with slim set rows, undo toast, rest timer and
+/// compact bottom actions.
 struct ActiveWorkoutView: View {
     @State private var viewModel: SessionEditorViewModel
     @State private var showPicker = false
     @State private var showSaveTemplate = false
     @State private var confirmFinish = false
+    @State private var askName = false
+    @State private var finishName = ""
 
     init(session: WorkoutSession, context: ModelContext) {
         _viewModel = State(initialValue: SessionEditorViewModel(session: session, context: context))
@@ -18,8 +21,10 @@ struct ActiveWorkoutView: View {
     var body: some View {
         List {
             Section {
-                LabeledContent("Started", value: session.startedAt.formatted(date: .omitted, time: .shortened))
-                LabeledContent("Sets", value: "\(viewModel.totalSets)")
+                WorkoutNameField(viewModel: viewModel)
+                Text("Started \(session.startedAt.formatted(date: .omitted, time: .shortened)) · \(viewModel.totalSets) sets")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
             if session.entries.isEmpty {
                 Section {
@@ -32,6 +37,7 @@ struct ActiveWorkoutView: View {
             }
         }
         .listSectionSpacing(.compact)
+        .environment(\.defaultMinListRowHeight, 34)
         .navigationTitle("Workout")
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -63,11 +69,28 @@ struct ActiveWorkoutView: View {
                 Text("No sets were logged, so the workout won't be saved.")
             }
         }
-        .onAppear(perform: openDebugPopupIfNeeded)
+        .alert("Name this workout", isPresented: $askName) {
+            TextField("e.g. Anterior", text: $finishName)
+                .textInputAutocapitalization(.words)
+            Button("Save & Finish") { viewModel.finish(naming: finishName) }
+                .disabled(finishName.trimmingCharacters(in: .whitespaces).isEmpty)
+            Button("Skip") { viewModel.finish() }
+            Button("Cancel", role: .cancel) {}
+        }
+        .onAppear(perform: runDebugScenario)
     }
 
     private var finishTitle: String {
         viewModel.totalSets == 0 ? "Discard empty workout?" : "Finish workout?"
+    }
+
+    private func tapFinish() {
+        if viewModel.totalSets > 0 && viewModel.needsNameBeforeFinish {
+            finishName = ""
+            askName = true
+        } else {
+            confirmFinish = true
+        }
     }
 
     private var bottomBar: some View {
@@ -76,36 +99,30 @@ struct ActiveWorkoutView: View {
                 UndoToastView(message: action.message, onUndo: viewModel.undo)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            RestTimerView(lastSetAt: viewModel.lastSetAt)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            HStack(spacing: 12) {
+            HStack(spacing: 10) {
+                RestTimerView(lastSetAt: viewModel.lastSetAt)
+                Spacer(minLength: 8)
                 Button {
                     showPicker = true
                 } label: {
                     Label("Add Exercise", systemImage: "plus")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, minHeight: 50)
+                        .font(.subheadline.weight(.semibold))
                 }
                 .buttonStyle(.borderedProminent)
-
-                Button {
-                    confirmFinish = true
-                } label: {
-                    Text("Finish")
-                        .font(.headline)
-                        .frame(minWidth: 80, minHeight: 50)
-                }
-                .buttonStyle(.bordered)
+                Button("Finish", action: tapFinish)
+                    .font(.subheadline.weight(.semibold))
+                    .buttonStyle(.bordered)
             }
+            .controlSize(.regular)
         }
         .padding(.horizontal)
-        .padding(.vertical, 10)
+        .padding(.vertical, 8)
         .background(.bar)
         .animation(.snappy, value: viewModel.undoAction)
     }
 
     /// Debug-only scenarios used to screenshot and smoke-test flows (no-op in Release).
-    private func openDebugPopupIfNeeded() {
+    private func runDebugScenario() {
         switch DebugScenario.current {
         case .workoutPopup:
             if let entry = session.orderedEntries.first { viewModel.openAddSet(for: entry) }

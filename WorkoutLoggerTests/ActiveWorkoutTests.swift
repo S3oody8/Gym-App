@@ -11,7 +11,7 @@ final class ActiveWorkoutTests: XCTestCase {
 
     override func setUp() async throws {
         container = try ModelSchema.makeContainer(inMemory: true)
-        bench = Exercise(name: "Bench", primary: .chest, equipment: .barbell, weightIncrement: 2.5)
+        bench = Exercise(name: "Bench", equipment: .barbell, weightIncrement: 2.5)
         context.insert(bench)
         try context.save()
     }
@@ -92,7 +92,7 @@ final class ActiveWorkoutTests: XCTestCase {
     func testRemoveExerciseAndUndo() throws {
         let session = try store.startSession()
         let vm = SessionEditorViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
-        let row = Exercise(name: "Row", primary: .upperBack, equipment: .cable)
+        let row = Exercise(name: "Row", equipment: .cable)
         context.insert(row)
         vm.addExercise(bench)
         vm.addExercise(row)

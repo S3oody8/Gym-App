@@ -58,7 +58,7 @@ final class RestAlertSchedulingTests: XCTestCase {
 
     override func setUp() async throws {
         container = try ModelSchema.makeContainer(inMemory: true)
-        let bench = Exercise(name: "Bench", primary: .chest, equipment: .barbell)
+        let bench = Exercise(name: "Bench", equipment: .barbell)
         context.insert(bench)
         let session = try WorkoutStore(context: context).startSession()
         fake = FakeRestAlerts()

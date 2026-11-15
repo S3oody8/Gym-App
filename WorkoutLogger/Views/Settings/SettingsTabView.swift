@@ -3,8 +3,6 @@ import UserNotifications
 
 /// Settings. Data and Health sections are added in later steps.
 struct SettingsTabView: View {
-    @AppStorage(SettingsKeys.secondaryMusclesEnabled)
-    private var secondaryEnabled = SettingsKeys.defaultSecondaryMusclesEnabled
     @AppStorage(SettingsKeys.restAlertEnabled)
     private var restAlertEnabled = SettingsKeys.defaultRestAlertEnabled
     @AppStorage(SettingsKeys.restAlertSeconds)
@@ -14,14 +12,6 @@ struct SettingsTabView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section {
-                    Toggle("Secondary muscles", isOn: $secondaryEnabled)
-                } header: {
-                    Text("Exercises")
-                } footer: {
-                    Text("When off, secondary muscles are hidden and only primary muscles count toward volume.")
-                }
-
                 Section {
                     Toggle("Rest alert", isOn: $restAlertEnabled)
                     if restAlertEnabled {

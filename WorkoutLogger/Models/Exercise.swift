@@ -6,10 +6,6 @@ import SwiftData
 final class Exercise {
     @Attribute(.unique) var id: UUID
     var name: String
-    /// Raw value of the primary `MuscleGroup`.
-    var primaryMuscle: String
-    /// Raw values of the secondary `MuscleGroup`s.
-    var secondaryMuscles: [String]
     /// Raw value of `Equipment`.
     var equipmentRaw: String
     /// Weight step in kg used by the ± buttons.
@@ -27,8 +23,6 @@ final class Exercise {
     init(
         id: UUID = UUID(),
         name: String,
-        primary: MuscleGroup,
-        secondary: [MuscleGroup] = [],
         equipment: Equipment,
         weightIncrement: Double = 2.5,
         createdAt: Date = .now,
@@ -36,8 +30,6 @@ final class Exercise {
     ) {
         self.id = id
         self.name = name
-        self.primaryMuscle = primary.rawValue
-        self.secondaryMuscles = secondary.map(\.rawValue)
         self.equipmentRaw = equipment.rawValue
         self.weightIncrement = weightIncrement
         self.createdAt = createdAt
@@ -47,16 +39,6 @@ final class Exercise {
     var equipment: Equipment {
         get { Equipment(rawValue: equipmentRaw) ?? .machine }
         set { equipmentRaw = newValue.rawValue }
-    }
-
-    var primary: MuscleGroup {
-        get { MuscleGroup(rawValue: primaryMuscle) ?? .chest }
-        set { primaryMuscle = newValue.rawValue }
-    }
-
-    var secondary: [MuscleGroup] {
-        get { secondaryMuscles.compactMap(MuscleGroup.init(rawValue:)) }
-        set { secondaryMuscles = newValue.map(\.rawValue) }
     }
 
     /// True if the exercise appears in any session. Such exercises can be archived but not deleted.

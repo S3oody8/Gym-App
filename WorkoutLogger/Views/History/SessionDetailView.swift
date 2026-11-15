@@ -19,13 +19,19 @@ struct SessionDetailView: View {
     var body: some View {
         List {
             Section {
+                WorkoutNameField(viewModel: viewModel)
                 DatePicker(
                     "Started",
                     selection: Binding(get: { session.startedAt }, set: { viewModel.moveStart(to: $0) }),
                     in: ...Date.now
                 )
-                LabeledContent("Duration", value: DurationFormatter.string(session.duration))
-                LabeledContent("Sets", value: "\(viewModel.totalSets)")
+                Text([
+                    "\(viewModel.totalSets) sets",
+                    DurationFormatter.string(session.duration),
+                    SessionMetrics.loadText(session.load),
+                ].joined(separator: " · "))
+                .font(.subheadline.monospacedDigit())
+                .foregroundStyle(.secondary)
             } footer: {
                 Text("Changing the start moves every set by the same amount. Duration runs from the first set to the last.")
             }
@@ -34,7 +40,8 @@ struct SessionDetailView: View {
             }
         }
         .listSectionSpacing(.compact)
-        .navigationTitle(session.startedAt.formatted(.dateTime.weekday(.abbreviated).day().month()))
+        .environment(\.defaultMinListRowHeight, 34)
+        .navigationTitle(SessionMetrics.detailTitle(name: session.name, date: session.startedAt))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -62,13 +69,14 @@ struct SessionDetailView: View {
                     showPicker = true
                 } label: {
                     Label("Add Exercise", systemImage: "plus")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, minHeight: 50)
+                        .font(.subheadline.weight(.semibold))
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
+                .controlSize(.regular)
             }
             .padding(.horizontal)
-            .padding(.vertical, 10)
+            .padding(.vertical, 8)
             .background(.bar)
             .animation(.snappy, value: viewModel.undoAction)
         }

@@ -5,8 +5,6 @@ import SwiftUI
 struct ExerciseEditorView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
-    @AppStorage(SettingsKeys.secondaryMusclesEnabled)
-    private var secondaryEnabled = SettingsKeys.defaultSecondaryMusclesEnabled
     @Query private var allExercises: [Exercise]
     @State private var viewModel: ExerciseEditorViewModel
     @State private var library = ExerciseLibraryViewModel()
@@ -34,23 +32,6 @@ struct ExerciseEditorView: View {
                     if validationError == .duplicateName {
                         Text("An exercise with this name already exists.")
                             .foregroundStyle(.red)
-                    }
-                }
-                Section("Muscles") {
-                    Picker("Primary", selection: $viewModel.draft.primary) {
-                        ForEach(MuscleGroup.allCases) { muscle in
-                            Text(muscle.rawValue).tag(muscle)
-                        }
-                    }
-                    if secondaryEnabled {
-                        NavigationLink {
-                            SecondaryMusclePicker(
-                                selection: $viewModel.draft.secondary,
-                                primary: viewModel.draft.primary
-                            )
-                        } label: {
-                            LabeledContent("Secondary", value: secondarySummary)
-                        }
                     }
                 }
                 Section {
@@ -150,8 +131,4 @@ struct ExerciseEditorView: View {
         )
     }
 
-    private var secondarySummary: String {
-        let list = viewModel.draft.cleanedSecondary
-        return list.isEmpty ? "None" : list.map(\.rawValue).joined(separator: ", ")
-    }
 }

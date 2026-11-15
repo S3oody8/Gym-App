@@ -3,8 +3,6 @@ import Foundation
 /// Editable values for creating or editing an exercise. Pure value type, no UI.
 struct ExerciseDraft: Equatable, Sendable {
     var name: String = ""
-    var primary: MuscleGroup = .chest
-    var secondary: Set<MuscleGroup> = []
     var equipment: Equipment = .machine
     /// Text as typed by the user (accepts "," or "." as decimal separator).
     var incrementText: String = "2.5"
@@ -26,11 +24,6 @@ struct ExerciseDraft: Equatable, Sendable {
             .replacingOccurrences(of: ",", with: ".")
         guard let value = Double(text), value.isFinite, value > 0 else { return nil }
         return value
-    }
-
-    /// Secondary muscles excluding the primary, in enum order.
-    var cleanedSecondary: [MuscleGroup] {
-        MuscleGroup.allCases.filter { secondary.contains($0) && $0 != primary }
     }
 
     /// Normalised key for duplicate detection: trimmed, case-insensitive.

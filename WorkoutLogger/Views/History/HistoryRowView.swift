@@ -1,36 +1,27 @@
 import SwiftUI
 
-/// One finished session in the History list.
+/// One finished session: name as title, then "15/11 · 12 sets · 52 min · Load 4,820 kg".
 struct HistoryRowView: View {
     let session: WorkoutSession
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(session.startedAt.formatted(.dateTime.weekday(.wide).day().month().year()))
+        VStack(alignment: .leading, spacing: 3) {
+            Text(SessionMetrics.title(name: session.name))
                 .font(.headline)
             Text(summary)
-                .font(.subheadline)
+                .font(.subheadline.monospacedDigit())
                 .foregroundStyle(.secondary)
-            if !exerciseNames.isEmpty {
-                Text(exerciseNames)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-            }
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, 1)
     }
 
     private var summary: String {
         let sets = session.allSets.count
         return [
-            session.startedAt.formatted(date: .omitted, time: .shortened),
+            SessionMetrics.shortDate(session.startedAt),
             "\(sets) set\(sets == 1 ? "" : "s")",
             DurationFormatter.string(session.duration),
+            SessionMetrics.loadText(session.load),
         ].joined(separator: " · ")
-    }
-
-    private var exerciseNames: String {
-        session.orderedEntries.map { $0.exercise?.name ?? "Deleted exercise" }.joined(separator: ", ")
     }
 }

@@ -30,6 +30,11 @@ struct WorkoutStore {
         return session
     }
 
+    func rename(_ session: WorkoutSession, to name: String) throws {
+        session.name = name
+        try save()
+    }
+
     func finish(_ session: WorkoutSession, at date: Date = .now) throws {
         session.finishedAt = date
         try save()
@@ -57,6 +62,7 @@ struct WorkoutStore {
     func deleteSession(_ session: WorkoutSession) throws -> SessionSnapshot {
         let snapshot = SessionSnapshot(
             id: session.id,
+            name: session.name,
             startedAt: session.startedAt,
             finishedAt: session.finishedAt,
             entries: session.orderedEntries.map { entry in
@@ -71,7 +77,7 @@ struct WorkoutStore {
 
     @discardableResult
     func restoreSession(_ snapshot: SessionSnapshot) throws -> WorkoutSession {
-        let session = WorkoutSession(id: snapshot.id, startedAt: snapshot.startedAt,
+        let session = WorkoutSession(id: snapshot.id, name: snapshot.name, startedAt: snapshot.startedAt,
                                      finishedAt: snapshot.finishedAt)
         context.insert(session)
         for entrySnapshot in snapshot.entries {
@@ -103,10 +109,10 @@ struct WorkoutStore {
         return template
     }
 
-    /// Starts a new live workout with the template's exercises in order and no sets.
+    /// Starts a new live workout named after the template, with its exercises in order and no sets.
     @discardableResult
     func startSession(from template: WorkoutTemplate, at date: Date = .now) throws -> WorkoutSession {
-        let session = WorkoutSession(startedAt: date)
+        let session = WorkoutSession(name: template.name, startedAt: date)
         context.insert(session)
         let exercises = template.orderedItems.compactMap(\.exercise)
         for (index, exercise) in exercises.enumerated() {

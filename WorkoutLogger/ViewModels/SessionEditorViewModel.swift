@@ -234,9 +234,24 @@ final class SessionEditorViewModel {
 
     // MARK: Finish
 
-    func finish() {
+    /// True when Finish should first ask for a name.
+    var needsNameBeforeFinish: Bool {
+        session.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// Finishes the workout, optionally naming it first (nil = keep the current name / Skip).
+    func finish(naming name: String? = nil) {
         restAlerts.cancel()
-        perform { try store.finish(session) }
+        perform {
+            if let name { try store.rename(session, to: name.trimmingCharacters(in: .whitespacesAndNewlines)) }
+            try store.finish(session)
+        }
+    }
+
+    /// Saves the workout name as typed (trimmed only for display / on Finish). Not part of undo.
+    func rename(to name: String) {
+        guard name != session.name else { return }
+        perform { try store.rename(session, to: name) }
     }
 
     func discard() {

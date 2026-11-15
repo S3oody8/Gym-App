@@ -5,6 +5,8 @@ import SwiftData
 @Model
 final class WorkoutSession {
     @Attribute(.unique) var id: UUID
+    /// User-given name, e.g. "Anterior". Empty if not named.
+    var name: String = ""
     /// When the session was started (editable for past sessions).
     var startedAt: Date
     /// Set when the user finishes the session. `nil` means the workout is still active.
@@ -13,8 +15,9 @@ final class WorkoutSession {
     @Relationship(deleteRule: .cascade, inverse: \SessionExercise.session)
     var entries: [SessionExercise] = []
 
-    init(id: UUID = UUID(), startedAt: Date = .now, finishedAt: Date? = nil) {
+    init(id: UUID = UUID(), name: String = "", startedAt: Date = .now, finishedAt: Date? = nil) {
         self.id = id
+        self.name = name
         self.startedAt = startedAt
         self.finishedAt = finishedAt
     }
@@ -29,6 +32,11 @@ final class WorkoutSession {
     /// All sets in the session.
     var allSets: [WorkoutSet] {
         entries.flatMap(\.sets)
+    }
+
+    /// Total volume in kg: weight × reps over all sets (working and drop).
+    var load: Double {
+        SessionMetrics.load(allSets.map(\.values))
     }
 
     /// Duration from the first set logged to the last (0 if fewer than two sets).

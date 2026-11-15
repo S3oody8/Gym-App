@@ -18,8 +18,6 @@ final class ExerciseEditorViewModel {
         if let exercise {
             draft = ExerciseDraft(
                 name: exercise.name,
-                primary: exercise.primary,
-                secondary: Set(exercise.secondary),
                 equipment: exercise.equipment,
                 incrementText: ExerciseDraft.format(exercise.weightIncrement)
             )
@@ -47,12 +45,10 @@ final class ExerciseEditorViewModel {
         if let exercise {
             target = exercise
         } else {
-            target = Exercise(name: draft.trimmedName, primary: draft.primary, equipment: draft.equipment)
+            target = Exercise(name: draft.trimmedName, equipment: draft.equipment)
             context.insert(target)
         }
         target.name = draft.trimmedName
-        target.primary = draft.primary
-        target.secondary = draft.cleanedSecondary
         target.equipment = draft.equipment
         target.weightIncrement = increment
         do {
