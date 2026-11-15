@@ -12,6 +12,8 @@ final class SessionEditorViewModel {
     private let store: WorkoutStore
     private let restAlerts: RestAlertScheduling
     private let settings: () -> RestAlertSettings
+    private let health: WorkoutHealthExporting
+    private let healthEnabled: () -> Bool
 
     /// Last undoable action, shown in the toast while non-nil.
     private(set) var undoAction: WorkoutUndoAction?
@@ -30,8 +32,12 @@ final class SessionEditorViewModel {
         session: WorkoutSession,
         context: ModelContext,
         restAlerts: RestAlertScheduling? = nil,
-        settings: @escaping () -> RestAlertSettings = { RestAlertSettings.current() }
+        settings: @escaping () -> RestAlertSettings = { RestAlertSettings.current() },
+        health: WorkoutHealthExporting? = nil,
+        healthEnabled: @escaping () -> Bool = { HealthSync.isEnabled }
     ) {
+        self.health = health ?? HealthSync.shared
+        self.healthEnabled = healthEnabled
         self.session = session
         self.store = WorkoutStore(context: context)
         self.restAlerts = restAlerts ?? RestAlertNotifier.shared
@@ -253,7 +259,15 @@ final class SessionEditorViewModel {
             if let name { try store.rename(session, to: name.trimmingCharacters(in: .whitespacesAndNewlines)) }
             try store.finish(session)
         }
+        guard !session.isActive else { return }
+        let (start, end, sets) = (session.startedAt, session.finishedAt, totalSets)
+        let health = health, enabled = healthEnabled()
+        healthTask = Task { await HealthSync.export(startedAt: start, finishedAt: end, setCount: sets,
+                                                    exporter: health, enabled: enabled) }
     }
+
+    /// The Health export started by the last `finish` (exposed for tests).
+    private(set) var healthTask: Task<Void, Never>?
 
     /// Saves the workout name as typed (trimmed only for display / on Finish). Not part of undo.
     func rename(to name: String) {

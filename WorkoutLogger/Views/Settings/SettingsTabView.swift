@@ -31,6 +31,8 @@ struct SettingsTabView: View {
                     }
                 }
 
+                HealthSettingsSection()
+
                 DataSettingsSection(viewModel: dataViewModel)
             }
             .modifier(DataSettingsPresentation(viewModel: dataViewModel))

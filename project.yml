@@ -27,6 +27,11 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIRequiresFullScreen: YES
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Saves each finished workout to Apple Health as a strength-training workout."
+        INFOPLIST_KEY_NSHealthShareUsageDescription: "WorkoutLogger only writes workouts and does not read your health data."
+        # HealthKit is opt-in at build time (SPEC section 9). Health build:
+        #   SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) HEALTHKIT'
+        #   and sign with WorkoutLogger/WorkoutLogger-Health.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_PREVIEWS: YES
