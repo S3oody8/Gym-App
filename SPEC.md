@@ -13,6 +13,8 @@ Personal iOS workout-logging app replacing Shrug. Single user. App name: TBD (pl
 ## 1. Exercise library
 - User-defined exercise names. Variants are separate exercises (e.g. "Lat Pulldown – Neutral" and "Lat Pulldown – Wide").
 - Fields: name, primary muscle, secondary muscles (multi), equipment tag (Smith / Machine / Cable / Dumbbell / Barbell / Bodyweight), weight increment (per exercise, e.g. cable 5 kg, DB 2 kg).
+- Muscle groups are a fixed list (enum stored as String raw values, not free text): Chest, Lats, Upper Back, Lower Back, Traps, Front Delts, Side Delts, Rear Delts, Biceps, Triceps, Forearms, Abs, Quads, Hamstrings, Glutes, Adductors, Calves. Equipment is also a fixed enum (the six tags above).
+- Deleting: an exercise with **no history** can be deleted. An exercise **with history cannot be deleted**; offer **Archive** instead. Archived exercises are hidden from pickers and search, their history and graphs are kept, and they can be unarchived from the Exercises tab.
 - Settings toggle: **"Secondary muscles" ON by default**. When OFF, hide the secondary-muscle UI and count only primary muscles in volume.
 - Search the exercise list by name.
 - Weight conventions:
@@ -73,11 +75,11 @@ Personal iOS workout-logging app replacing Shrug. Single user. App name: TBD (pl
 - **Column mapping must be built from a real sample Shrug CSV. Do not guess the format.** Stop and ask for the sample file before implementing the parser.
 - Mapping screen before committing: every Shrug exercise name → rename, keep, or merge into another exercise.
 - Groups rows into sessions by date/time.
-- Idempotent: duplicates are skipped if the import is run again.
+- Idempotent: duplicates are skipped if the import is run again. Records whose ID already exists are **skipped, never overwritten**.
 
 ## 8. Data and backup
 - **Settings → Data section** with clearly labelled buttons: "Export backup (JSON)", "Export to CSV", "Import backup (JSON)", "Import from Shrug (CSV)". Exports open the iOS share sheet / Files picker so the file can be saved to Files, AirDropped or sent.
-- JSON export/import of the full database via `.fileExporter` / `.fileImporter`. Import matches on UUID and skips existing records.
+- JSON export/import of the full database via `.fileExporter` / `.fileImporter`. Import matches on UUID and skips existing records (**never overwrites** an existing record).
 - CSV export (one row per set: date, session, exercise, set #, type, weight, reps, RIR).
 - Weekly local-notification reminder to back up, with a toggle in Settings.
 

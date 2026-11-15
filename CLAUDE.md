@@ -24,17 +24,17 @@ SPEC.md is **what** to build. This file is **how** to work. Read both fully at t
 - `.gitignore`: DerivedData, build/, *.xcuserstate, xcuserdata/, .DS_Store, *.ipa.
 
 ## 4. Build and test commands
-First find the simulator: `xcrun simctl list devices available`. Prefer iPhone 16 Pro; otherwise use the newest iPhone available.
+First find the simulator: `xcrun simctl list devices available`. Use the **newest available iPhone Pro** simulator (e.g. iPhone 18 Pro); if there is no Pro model, use the newest iPhone. Substitute its name (or `id=<UDID>`) in the commands below.
 
 ```bash
 # Build (no signing needed for the simulator)
 xcodebuild -project WorkoutLogger.xcodeproj -scheme WorkoutLogger \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+  -destination 'platform=iOS Simulator,name=<newest iPhone Pro>' \
   -configuration Debug build CODE_SIGNING_ALLOWED=NO -quiet
 
 # Tests
 xcodebuild -project WorkoutLogger.xcodeproj -scheme WorkoutLogger \
-  -destination 'platform=iOS Simulator,name=iPhone 16 Pro' test -quiet
+  -destination 'platform=iOS Simulator,name=<newest iPhone Pro>' test -quiet
 ```
 - On a failed build, read the errors, fix them and rebuild until it's clean. Treat new warnings as things to fix.
 - Screenshots: if the user asks to see a screen, boot the simulator, install, launch and capture it with `xcrun simctl io booted screenshot ~/Desktop/<name>.png`, then shut the simulator down.
