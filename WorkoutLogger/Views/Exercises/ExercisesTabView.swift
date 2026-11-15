@@ -1,15 +1,118 @@
+import SwiftData
 import SwiftUI
 
-/// Placeholder for the Exercises tab (built in a later step).
+/// Exercise library: search, add, edit, delete (no history) or archive (has history).
 struct ExercisesTabView: View {
+    @Environment(\.modelContext) private var context
+    @Query private var exercises: [Exercise]
+    @State private var viewModel = ExerciseLibraryViewModel()
+    @State private var editing: Exercise?
+    @State private var isAdding = false
+    @State private var pendingDelete: Exercise?
+
     var body: some View {
         NavigationStack {
-            ContentUnavailableView("No exercises yet", systemImage: "square.dashed")
+            list
                 .navigationTitle("Exercises")
+                .searchable(text: $viewModel.searchText, prompt: "Search exercises")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Toggle(isOn: $viewModel.showArchived) {
+                            Label("Show Archived", systemImage: "archivebox")
+                        }
+                        .toggleStyle(.button)
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Add Exercise", systemImage: "plus") { isAdding = true }
+                    }
+                }
+                .sheet(isPresented: $isAdding) {
+                    ExerciseEditorView(exercise: nil)
+                }
+                .sheet(item: $editing) { exercise in
+                    ExerciseEditorView(exercise: exercise)
+                }
+                .confirmationDialog(
+                    "Delete \(pendingDelete?.name ?? "exercise")?",
+                    isPresented: Binding(
+                        get: { pendingDelete != nil },
+                        set: { if !$0 { pendingDelete = nil } }
+                    ),
+                    titleVisibility: .visible
+                ) {
+                    Button("Delete", role: .destructive) {
+                        if let exercise = pendingDelete {
+                            viewModel.delete(exercise, in: context)
+                        }
+                        pendingDelete = nil
+                    }
+                } message: {
+                    Text("This exercise has no history. This can't be undone.")
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var list: some View {
+        let active = viewModel.visibleActive(exercises)
+        let archived = viewModel.visibleArchived(exercises)
+        if exercises.isEmpty {
+            ContentUnavailableView {
+                Label("No Exercises", systemImage: "dumbbell")
+            } description: {
+                Text("Add your first exercise.")
+            } actions: {
+                Button("Add Exercise") { isAdding = true }
+                    .buttonStyle(.borderedProminent)
+            }
+        } else if active.isEmpty && archived.isEmpty && !viewModel.searchText.isEmpty {
+            ContentUnavailableView.search(text: viewModel.searchText)
+        } else {
+            List {
+                Section {
+                    ForEach(active) { exercise in
+                        row(exercise)
+                    }
+                }
+                if !archived.isEmpty {
+                    Section("Archived") {
+                        ForEach(archived) { exercise in
+                            row(exercise)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func row(_ exercise: Exercise) -> some View {
+        Button {
+            editing = exercise
+        } label: {
+            ExerciseRowView(exercise: exercise)
+        }
+        .tint(.primary)
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            if exercise.isArchived {
+                Button("Unarchive", systemImage: "tray.and.arrow.up") {
+                    viewModel.setArchived(false, for: exercise, in: context)
+                }
+                .tint(.blue)
+            } else if exercise.hasHistory {
+                Button("Archive", systemImage: "archivebox") {
+                    viewModel.setArchived(true, for: exercise, in: context)
+                }
+                .tint(.orange)
+            } else {
+                Button("Delete", systemImage: "trash", role: .destructive) {
+                    pendingDelete = exercise
+                }
+            }
         }
     }
 }
 
 #Preview {
     ExercisesTabView()
+        .modelContainer(try! ModelSchema.makeContainer(inMemory: true))
 }

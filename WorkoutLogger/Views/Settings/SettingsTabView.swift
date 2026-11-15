@@ -1,11 +1,22 @@
 import SwiftUI
 
-/// Placeholder for the Settings tab (built in a later step).
+/// Settings. Further sections (rest timer, data, Health) are added in later steps.
 struct SettingsTabView: View {
+    @AppStorage(SettingsKeys.secondaryMusclesEnabled)
+    private var secondaryEnabled = SettingsKeys.defaultSecondaryMusclesEnabled
+
     var body: some View {
         NavigationStack {
-            ContentUnavailableView("Settings coming soon", systemImage: "square.dashed")
-                .navigationTitle("Settings")
+            Form {
+                Section {
+                    Toggle("Secondary muscles", isOn: $secondaryEnabled)
+                } header: {
+                    Text("Exercises")
+                } footer: {
+                    Text("When off, secondary muscles are hidden and only primary muscles count toward volume.")
+                }
+            }
+            .navigationTitle("Settings")
         }
     }
 }

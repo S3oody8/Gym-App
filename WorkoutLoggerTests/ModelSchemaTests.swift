@@ -8,8 +8,8 @@ final class ModelSchemaTests: XCTestCase {
         let container = try ModelSchema.makeContainer(inMemory: true)
         let context = container.mainContext
 
-        let bench = Exercise(name: "Bench Press", primaryMuscle: "Chest",
-                             secondaryMuscles: ["Triceps"], equipment: .barbell)
+        let bench = Exercise(name: "Bench Press", primary: .chest,
+                             secondary: [.triceps], equipment: .barbell)
         context.insert(bench)
 
         let session = WorkoutSession()
@@ -46,7 +46,7 @@ final class ModelSchemaTests: XCTestCase {
     func testDeletingSessionCascadesToSets() throws {
         let container = try ModelSchema.makeContainer(inMemory: true)
         let context = container.mainContext
-        let ex = Exercise(name: "Row", primaryMuscle: "Back", equipment: .cable)
+        let ex = Exercise(name: "Row", primary: .lats, equipment: .cable)
         context.insert(ex)
         let session = WorkoutSession()
         context.insert(session)
