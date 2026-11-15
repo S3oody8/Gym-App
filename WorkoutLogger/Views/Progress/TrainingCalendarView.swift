@@ -68,7 +68,7 @@ struct TrainingCalendarView: View {
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.plain)
-        .disabled(!trained)
+        .allowsHitTesting(trained)
         .accessibilityLabel("\(day.formatted(date: .complete, time: .omitted))\(trained ? ", trained" : "")")
     }
 
