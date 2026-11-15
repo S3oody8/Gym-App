@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import UserNotifications
 
 /// The live workout: exercise cards with sets, quick-add buttons, undo toast and bottom actions.
 struct ActiveWorkoutView: View {
@@ -123,6 +124,22 @@ struct ActiveWorkoutView: View {
                 if let entry = session.orderedEntries.first { viewModel.removeEntry(entry) }
                 try? await Task.sleep(for: .seconds(1))
                 viewModel.undo()
+            }
+        case .restAlert:
+            Task {
+                let center = UNUserNotificationCenter.current()
+                _ = try? await center.requestAuthorization(options: [.alert, .sound, .provisional])
+                if let entry = session.orderedEntries.first { viewModel.quickAdd(to: entry, minus: 1) }
+                try? await Task.sleep(for: .seconds(1))
+                let pending = await center.pendingNotificationRequests().map {
+                    "\($0.identifier) in \(Int(($0.trigger as? UNTimeIntervalNotificationTrigger)?.timeInterval ?? -1))s"
+                }
+                print("DEBUG pending: \(pending)")
+                try? await Task.sleep(for: .seconds(35))
+                let delivered = await center.deliveredNotifications().map {
+                    "\($0.request.identifier): \($0.request.content.title) / \($0.request.content.body)"
+                }
+                print("DEBUG delivered: \(delivered)")
             }
         default:
             break

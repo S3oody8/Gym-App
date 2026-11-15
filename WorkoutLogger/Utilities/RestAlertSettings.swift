@@ -6,10 +6,13 @@ struct RestAlertSettings: Equatable, Sendable {
     var seconds: Int
 
     static func current(from defaults: UserDefaults = .standard) -> RestAlertSettings {
-        let enabled = defaults.object(forKey: SettingsKeys.restAlertEnabled) as? Bool
-            ?? SettingsKeys.defaultRestAlertEnabled
-        let seconds = defaults.object(forKey: SettingsKeys.restAlertSeconds) as? Int
-            ?? SettingsKeys.defaultRestAlertSeconds
+        // `bool(forKey:)` / `integer(forKey:)` also accept string values (e.g. launch arguments).
+        let enabled = defaults.object(forKey: SettingsKeys.restAlertEnabled) == nil
+            ? SettingsKeys.defaultRestAlertEnabled
+            : defaults.bool(forKey: SettingsKeys.restAlertEnabled)
+        let seconds = defaults.object(forKey: SettingsKeys.restAlertSeconds) == nil
+            ? SettingsKeys.defaultRestAlertSeconds
+            : defaults.integer(forKey: SettingsKeys.restAlertSeconds)
         return RestAlertSettings(enabled: enabled, seconds: RestTimerMath.clampAlert(seconds))
     }
 }
