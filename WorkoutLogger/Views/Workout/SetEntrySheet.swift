@@ -16,6 +16,7 @@ struct SetEntrySheet: View {
     var body: some View {
         VStack(spacing: 12) {
             header
+            Spacer(minLength: 0)
             HStack(spacing: 8) {
                 stepButton(up: false)
                 SetEntryFieldBox(title: "Weight (kg)", text: form.weightText, placeholder: "0",
@@ -33,8 +34,6 @@ struct SetEntrySheet: View {
                 Text("Drop set").tag(SetType.drop)
             }
             .pickerStyle(.segmented)
-
-            Spacer(minLength: 0)
 
             NumericKeypadView(decimalEnabled: form.field == .weight) { form.press($0) }
 

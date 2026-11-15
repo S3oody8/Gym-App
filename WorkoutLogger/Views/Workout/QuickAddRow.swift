@@ -14,16 +14,20 @@ struct QuickAddRow: View {
                 } label: {
                     Text("−\(n)")
                         .font(.headline.monospacedDigit())
-                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .lineLimit(1)
+                        .fixedSize()
+                        .frame(minWidth: 44, maxWidth: .infinity, minHeight: 44)
                 }
                 .buttonStyle(.bordered)
                 .disabled(!canQuickAdd)
                 .accessibilityLabel("Add set with \(n) fewer reps")
             }
             Button(action: onAddSet) {
-                Label("Set", systemImage: "plus")
+                Text("+ Set")
                     .font(.headline)
-                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .lineLimit(1)
+                    .fixedSize()
+                    .frame(minWidth: 72, maxWidth: .infinity, minHeight: 44)
             }
             .buttonStyle(.borderedProminent)
             .accessibilityLabel("Add set")

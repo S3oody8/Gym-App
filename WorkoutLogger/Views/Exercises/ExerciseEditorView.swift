@@ -128,7 +128,7 @@ struct ExerciseEditorView: View {
                 Button("Archive Exercise", systemImage: "archivebox") {
                     if library.setArchived(true, for: exercise, in: context) { dismiss() }
                 }
-                .tint(.orange)
+                .foregroundStyle(.orange)
             } else {
                 Button("Delete Exercise", systemImage: "trash", role: .destructive) {
                     confirmDelete = true
