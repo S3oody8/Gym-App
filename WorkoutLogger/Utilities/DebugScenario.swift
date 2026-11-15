@@ -16,6 +16,10 @@ enum DebugScenario: String {
     case templatePicker
     case progress
     case exerciseProgress
+    case shrugMapping
+    case shrugProgress
+    case shrugSummary
+    case shrugHistory
     case exercises
     case exerciseEditor
 
@@ -46,6 +50,17 @@ enum DebugScenario: String {
         #endif
     }()
 
+    /// Contents of the file passed with `-shrugFile <path>`, Debug only.
+    static let shrugFileText: String? = {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        guard let index = args.firstIndex(of: "-shrugFile"), args.indices.contains(index + 1) else { return nil }
+        return try? String(contentsOfFile: args[index + 1], encoding: .utf8)
+        #else
+        return nil
+        #endif
+    }()
+
     var initialTab: AppTab {
         switch self {
         case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert: .workout
@@ -54,6 +69,8 @@ enum DebugScenario: String {
         case .templatePicker: .workout
         case .progress: .progress
         case .exerciseProgress: .exercises
+        case .shrugMapping, .shrugProgress, .shrugSummary: .settings
+        case .shrugHistory: .history
         case .exercises, .exerciseEditor: .exercises
         }
     }

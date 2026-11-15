@@ -17,11 +17,13 @@ struct HistoryRowView: View {
 
     private var summary: String {
         let sets = session.allSets.count
+        // Imported workouts have no per-set times, so a 0 duration is left out.
+        let duration = session.duration > 0 ? DurationFormatter.string(session.duration) : nil
         return [
             SessionMetrics.shortDate(session.startedAt),
             "\(sets) set\(sets == 1 ? "" : "s")",
-            DurationFormatter.string(session.duration),
+            duration,
             SessionMetrics.loadText(session.load),
-        ].joined(separator: " · ")
+        ].compactMap { $0 }.joined(separator: " · ")
     }
 }

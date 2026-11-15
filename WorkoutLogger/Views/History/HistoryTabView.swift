@@ -14,6 +14,8 @@ struct HistoryTabView: View {
     @State private var confirmDelete: WorkoutSession?
     /// Deleted once the detail screen has been popped, so no view reads a deleted session.
     @State private var deleteAfterPop: WorkoutSession?
+    @State private var renaming: WorkoutSession?
+    @State private var renameText = ""
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -30,6 +32,11 @@ struct HistoryTabView: View {
                             Button("Delete", systemImage: "trash", role: .destructive) {
                                 confirmDelete = session
                             }
+                            Button("Rename", systemImage: "pencil") {
+                                renameText = session.name
+                                renaming = session
+                            }
+                            .tint(.blue)
                         }
                     }
                 }
@@ -60,6 +67,24 @@ struct HistoryTabView: View {
                 }
             } message: {
                 Text("All its exercises and sets will be deleted. You can undo right after.")
+            }
+            .alert("Rename Workout", isPresented: Binding(
+                get: { renaming != nil }, set: { if !$0 { renaming = nil } }
+            )) {
+                TextField("e.g. Anterior", text: $renameText)
+                    .textInputAutocapitalization(.words)
+                Button("Save") {
+                    if let session = renaming {
+                        do {
+                            try WorkoutStore(context: context).rename(
+                                session, to: renameText.trimmingCharacters(in: .whitespacesAndNewlines))
+                        } catch {
+                            viewModel.saveErrorMessage = error.localizedDescription
+                        }
+                    }
+                    renaming = nil
+                }
+                Button("Cancel", role: .cancel) { renaming = nil }
             }
             .alert("Couldn't save", isPresented: Binding(
                 get: { viewModel.saveErrorMessage != nil },

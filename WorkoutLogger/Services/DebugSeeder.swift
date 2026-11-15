@@ -6,6 +6,7 @@ import SwiftData
 enum DebugSeeder {
     static func seed(_ scenario: DebugScenario, into context: ModelContext) {
         #if DEBUG
+        if [.shrugMapping, .shrugProgress, .shrugSummary, .shrugHistory].contains(scenario) { return }
         let bench = Exercise(name: "Bench Press", equipment: .barbell, weightIncrement: 2.5)
         let pulldown = Exercise(name: "Lat Pulldown – Neutral", equipment: .cable, weightIncrement: 5)
         let curl = Exercise(name: "Incline DB Curl", equipment: .dumbbell,
@@ -33,7 +34,7 @@ enum DebugSeeder {
             current.entries.first?.sets.append(WorkoutSet(order: 3, weight: 60, reps: 10, type: .drop,
                                                           loggedAt: start.addingTimeInterval(600)))
             add([(65, 11), (65, 9)], of: pulldown, order: 1, to: current, start: start.addingTimeInterval(900))
-        case .exercises, .exerciseEditor:
+        case .exercises, .exerciseEditor, .shrugMapping, .shrugProgress, .shrugSummary, .shrugHistory:
             break
         case .progress, .exerciseProgress:
             let day = 86_400.0
@@ -84,6 +85,16 @@ enum DebugSeeder {
             legs.items.append(TemplateExercise(order: 0, exercise: smith))
         }
         try? context.save()
+        #endif
+    }
+
+    /// Runs a default Shrug import (convert lb, keep names) from `-shrugFile`, for screenshots.
+    static func importShrugIfNeeded(into context: ModelContext) async {
+        #if DEBUG
+        guard DebugScenario.current == .shrugHistory, let text = DebugScenario.shrugFileText,
+              let parsed = try? ShrugCSVParser.parse(text) else { return }
+        let plan = ShrugImportPlanner.plan(rows: parsed.rows, mappings: [:], alreadyKg: [])
+        _ = try? await ShrugImporter(context: context).run(plan)
         #endif
     }
 

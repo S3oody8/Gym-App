@@ -5,6 +5,7 @@ import UIKit
 /// Top-level tabs. While a workout is active, a "Resume workout" banner shows on every tab
 /// except Workout, and the screen is kept awake.
 struct RootTabView: View {
+    @Environment(\.modelContext) private var context
     @Query(filter: #Predicate<WorkoutSession> { $0.finishedAt == nil })
     private var activeSessions: [WorkoutSession]
     @State private var selection: AppTab = DebugScenario.current?.initialTab ?? .workout
@@ -38,6 +39,7 @@ struct RootTabView: View {
             }
         }
         .animation(.default, value: selection)
+        .task { await DebugSeeder.importShrugIfNeeded(into: context) }
         .onChange(of: hasActiveWorkout, initial: true) { _, active in
             UIApplication.shared.isIdleTimerDisabled = active
         }
