@@ -5,12 +5,15 @@ import SwiftUI
 /// `DataSettingsPresentation`, applied to the whole Form so list re-layout can't dismiss it.
 struct DataSettingsSection: View {
     @Environment(\.modelContext) private var context
-    @AppStorage(SettingsKeys.backupReminderEnabled)
-    private var reminderEnabled = SettingsKeys.defaultBackupReminderEnabled
+    @AppStorage(SettingsKeys.autoBackupEnabled)
+    private var autoBackup = SettingsKeys.defaultAutoBackupEnabled
+    @AppStorage(SettingsKeys.lastAutoBackup)
+    private var lastAutoBackup: Double = 0
     let viewModel: DataSettingsViewModel
 
     var body: some View {
         Section {
+            SwitchRow(title: "Weekly backup to Files", detail: lastBackupText, isOn: $autoBackup)
             Menu {
                 Button {
                     viewModel.exportJSON(context: context)
@@ -39,16 +42,19 @@ struct DataSettingsSection: View {
             } label: {
                 Label("Import", systemImage: "square.and.arrow.down")
             }
-            Toggle("Weekly backup reminder", isOn: $reminderEnabled)
         } header: {
             SectionLabel("Data")
         } footer: {
             Text("Import takes a backup (JSON) or a workout CSV.")
                 .foregroundStyle(Theme.textSubtle)
         }
-        .onChange(of: reminderEnabled) { _, enabled in
-            if enabled { RestAlertNotifier.shared.requestAuthorization() }
-            BackupReminder.sync(enabled: enabled)
+        .onChange(of: autoBackup) { _, enabled in
+            if enabled { AutoBackup.runIfDue(context: context) }
         }
+    }
+
+    /// "Last: Sun 23/11", or "Never".
+    private var lastBackupText: String {
+        lastAutoBackup > 0 ? "Last: \(HistoryFormat.day(Date(timeIntervalSince1970: lastAutoBackup)))" : "Never"
     }
 }

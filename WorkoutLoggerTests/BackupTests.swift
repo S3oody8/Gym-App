@@ -142,9 +142,41 @@ final class BackupTests: XCTestCase {
         XCTAssertEqual(lines[4], "2025-10-10 08:53,,Row,1,Working,65,10,")
     }
 
-    func testReminderIsWeeklySundayEvening() {
-        XCTAssertEqual(BackupReminder.triggerComponents.weekday, 1)
-        XCTAssertEqual(BackupReminder.triggerComponents.hour, 19)
-        XCTAssertEqual(BackupReminder.triggerComponents.minute, 0)
+    func testAutoBackupDueAfterSevenDays() {
+        let last = t0
+        XCTAssertTrue(AutoBackupPlan.isDue(lastBackup: nil, now: t0), "never backed up")
+        XCTAssertFalse(AutoBackupPlan.isDue(lastBackup: last, now: t0.addingTimeInterval(6 * 86_400 + 86_399)))
+        XCTAssertTrue(AutoBackupPlan.isDue(lastBackup: last, now: t0.addingTimeInterval(7 * 86_400)))
+        XCTAssertTrue(AutoBackupPlan.isDue(lastBackup: last, now: t0.addingTimeInterval(30 * 86_400)))
+    }
+
+    func testAutoBackupFileNameAndPruning() throws {
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(identifier: "UTC")!
+        let date = utc.date(from: DateComponents(year: 2026, month: 11, day: 3, hour: 9))!
+        XCTAssertEqual(AutoBackupPlan.fileName(for: date, calendar: utc), "WorkoutLogger-backup-2026-11-03.json")
+
+        let backups = (1...10).map { String(format: "WorkoutLogger-backup-2026-%02d-01.json", $0) }
+        let others = ["notes.txt", "WorkoutLogger-backup-export.json", "WorkoutLogger-sets-2026-01-01.csv"]
+        let pruned = AutoBackupPlan.filesToPrune((backups + others).shuffled())
+        XCTAssertEqual(Set(pruned), ["WorkoutLogger-backup-2026-01-01.json", "WorkoutLogger-backup-2026-02-01.json"],
+                       "keeps the newest 8, never touches other files")
+        XCTAssertTrue(AutoBackupPlan.filesToPrune(Array(backups.prefix(8))).isEmpty)
+    }
+
+    func testAutoBackupWritesAndPrunesFolder() throws {
+        let folder = FileManager.default.temporaryDirectory.appending(path: "AutoBackupTests-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: folder) }
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        for month in 1...8 {
+            try Data("{}".utf8).write(to: folder.appending(path: String(format: "WorkoutLogger-backup-2026-%02d-01.json", month)))
+        }
+        try Data("keep".utf8).write(to: folder.appending(path: "notes.txt"))
+        try AutoBackup.write(Data("{\"v\":1}".utf8), named: "WorkoutLogger-backup-2026-11-25.json", in: folder)
+        let names = try FileManager.default.contentsOfDirectory(atPath: folder.path(percentEncoded: false)).sorted()
+        XCTAssertEqual(names.count, 9)
+        XCTAssertFalse(names.contains("WorkoutLogger-backup-2026-01-01.json"), "oldest pruned")
+        XCTAssertTrue(names.contains("notes.txt"))
+        XCTAssertTrue(names.contains("WorkoutLogger-backup-2026-11-25.json"))
     }
 }
