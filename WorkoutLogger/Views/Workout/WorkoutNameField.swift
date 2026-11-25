@@ -4,6 +4,7 @@ import SwiftUI
 /// saved 0.5 s after typing stops, on Return and when the field goes away.
 struct WorkoutNameField: View {
     let viewModel: SessionEditorViewModel
+    var font: Font = .title3.weight(.semibold)
     @FocusState private var focused: Bool
 
     var body: some View {
@@ -11,7 +12,8 @@ struct WorkoutNameField: View {
             get: { viewModel.nameDraft },
             set: { viewModel.editName($0) }
         ))
-        .font(.title3.weight(.semibold))
+        .font(font)
+        .foregroundStyle(Theme.text)
         .textInputAutocapitalization(.words)
         .submitLabel(.done)
         .focused($focused)

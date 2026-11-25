@@ -3,7 +3,8 @@ import SwiftUI
 import UIKit
 
 /// Top-level tabs (Workouts / Exercises / Progress / Settings). The live workout opens full
-/// screen over the tabs. The screen is kept awake while a workout is active.
+/// screen over the tabs; minimised, a mini-bar shows above the tab bar. The screen is kept
+/// awake while a workout is active.
 struct RootTabView: View {
     @Environment(\.modelContext) private var context
     @Query(filter: #Predicate<WorkoutSession> { $0.finishedAt == nil }, sort: \WorkoutSession.startedAt, order: .reverse)
@@ -13,25 +14,34 @@ struct RootTabView: View {
 
     private var activeSession: WorkoutSession? { activeSessions.first }
 
+    /// Shown above the tab bar on every tab while a workout is active and minimised,
+    /// including after a relaunch with an unfinished workout.
+    @ViewBuilder
+    private var miniBar: some View {
+        if let session = activeSession, !isWorkoutOpen {
+            WorkoutMiniBar(session: session,
+                           rest: RestTimerStore.shared.visiblePeriod(for: session.id)) { isWorkoutOpen = true }
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+        }
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
-            if let session = activeSession, !isWorkoutOpen {
-                ResumeWorkoutBanner(startedAt: session.startedAt) { isWorkoutOpen = true }
-                    .transition(.move(edge: .top).combined(with: .opacity))
+        TabView(selection: $selection) {
+            Tab("Workouts", systemImage: "figure.strengthtraining.traditional", value: AppTab.workouts) {
+                WorkoutsTabView { isWorkoutOpen = true }
+                    .safeAreaInset(edge: .bottom, spacing: 0) { miniBar }
             }
-            TabView(selection: $selection) {
-                Tab("Workouts", systemImage: "figure.strengthtraining.traditional", value: AppTab.workouts) {
-                    WorkoutsTabView { isWorkoutOpen = true }
-                }
-                Tab("Exercises", systemImage: "dumbbell", value: AppTab.exercises) {
-                    ExercisesTabView()
-                }
-                Tab("Progress", systemImage: "chart.xyaxis.line", value: AppTab.progress) {
-                    ProgressTabView()
-                }
-                Tab("Settings", systemImage: "gearshape", value: AppTab.settings) {
-                    SettingsTabView()
-                }
+            Tab("Exercises", systemImage: "dumbbell", value: AppTab.exercises) {
+                ExercisesTabView()
+                    .safeAreaInset(edge: .bottom, spacing: 0) { miniBar }
+            }
+            Tab("Progress", systemImage: "chart.xyaxis.line", value: AppTab.progress) {
+                ProgressTabView()
+                    .safeAreaInset(edge: .bottom, spacing: 0) { miniBar }
+            }
+            Tab("Settings", systemImage: "gearshape", value: AppTab.settings) {
+                SettingsTabView()
+                    .safeAreaInset(edge: .bottom, spacing: 0) { miniBar }
             }
         }
         .fullScreenCover(isPresented: Binding(

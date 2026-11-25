@@ -10,8 +10,8 @@ import SwiftData
 final class SessionEditorViewModel {
     let session: WorkoutSession
     private let store: WorkoutStore
-    private let restAlerts: RestAlertScheduling
-    private let settings: () -> RestAlertSettings
+    /// Rest period, alert, Skip and Live Activity (shared with the mini-bar).
+    let restTimer: RestTimerStore
     private let health: WorkoutHealthExporting
     private let healthEnabled: () -> Bool
 
@@ -39,6 +39,7 @@ final class SessionEditorViewModel {
         context: ModelContext,
         restAlerts: RestAlertScheduling? = nil,
         settings: @escaping () -> RestAlertSettings = { RestAlertSettings.current() },
+        restTimer: RestTimerStore? = nil,
         health: WorkoutHealthExporting? = nil,
         healthEnabled: @escaping () -> Bool = { HealthSync.isEnabled }
     ) {
@@ -47,8 +48,10 @@ final class SessionEditorViewModel {
         self.session = session
         self.nameDraft = session.name
         self.store = WorkoutStore(context: context)
-        self.restAlerts = restAlerts ?? RestAlertNotifier.shared
-        self.settings = settings
+        // Tests pass fake alerts: they get their own timer that isn't saved to UserDefaults.
+        self.restTimer = restTimer ?? (restAlerts.map {
+            RestTimerStore(alerts: $0, settings: settings, defaults: nil)
+        } ?? .shared)
     }
 
     var totalSets: Int { session.allSets.count }
@@ -63,18 +66,17 @@ final class SessionEditorViewModel {
         session.allSets.map(\.loggedAt).max()
     }
 
-    /// Re-aligns the pending rest alert with the latest set (after add / delete / undo),
-    /// using the current settings. Edits don't call this, so settings changes only take
-    /// effect from the next rest period.
+    /// The rest period to show (nil before the first set and after Skip).
+    var restPeriod: RestPeriod? {
+        isLive ? restTimer.visiblePeriod(for: session.id) : nil
+    }
+
+    /// Re-aligns the rest period with the latest set (after add / delete / undo). A new latest
+    /// set starts a new period with the current settings; edits don't call this, so settings
+    /// changes only take effect from the next rest period.
     private func syncRestAlert(now: Date = .now) {
         guard isLive else { return }
-        let current = settings()
-        if let date = RestTimerMath.fireDate(lastSetAt: lastSetAt, alertSeconds: current.seconds,
-                                             enabled: current.enabled, now: now) {
-            restAlerts.schedule(at: date, restSeconds: current.seconds)
-        } else {
-            restAlerts.cancel()
-        }
+        restTimer.sync(sessionID: session.id, lastSetAt: lastSetAt, now: now)
     }
 
     // MARK: Lookups
@@ -272,7 +274,7 @@ final class SessionEditorViewModel {
 
     /// Finishes the workout, optionally naming it first (nil = keep the current name / Skip).
     func finish(naming name: String? = nil) {
-        restAlerts.cancel()
+        restTimer.end()
         commitName()
         perform {
             if let name { try store.rename(session, to: name.trimmingCharacters(in: .whitespacesAndNewlines)) }
@@ -315,7 +317,7 @@ final class SessionEditorViewModel {
     }
 
     func discard() {
-        restAlerts.cancel()
+        restTimer.end()
         perform { try store.discard(session) }
     }
 

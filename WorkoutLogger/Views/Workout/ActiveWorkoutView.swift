@@ -2,8 +2,8 @@ import SwiftData
 import SwiftUI
 import UserNotifications
 
-/// The live workout: name, exercise sections with slim set rows, undo toast, rest timer and
-/// compact bottom actions.
+/// The live workout, full screen: ⌄ minimise and Finish on top, the name as a big title, the
+/// exercise sections, the undo toast and the bottom actions.
 struct ActiveWorkoutView: View {
     @State private var viewModel: SessionEditorViewModel
     @State private var showPicker = false
@@ -24,43 +24,27 @@ struct ActiveWorkoutView: View {
     var body: some View {
         List {
             Section {
-                WorkoutNameField(viewModel: viewModel)
-                Text("Started \(session.startedAt.formatted(date: .omitted, time: .shortened)) · \(viewModel.totalSets) sets")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            if session.entries.isEmpty {
-                Section {
-                    Text("Tap Add Exercise to begin.")
-                        .foregroundStyle(.secondary)
+                header
+                if session.entries.isEmpty {
+                    AddExerciseCard { showPicker = true }
+                        .padding(.top, 12)
                 }
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
             ForEach(session.orderedEntries) { entry in
                 ExerciseCardSection(entry: entry, viewModel: viewModel)
             }
         }
         .listSectionSpacing(.compact)
         .environment(\.defaultMinListRowHeight, 34)
-        .navigationTitle("Workout")
-        .navigationBarTitleDisplayMode(.inline)
+        .scrollContentBackground(.hidden)
+        .background(Theme.background)
+        .toolbar(.hidden, for: .navigationBar)
+        .safeAreaInset(edge: .top, spacing: 0) { topBar }
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomBar
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Minimise", systemImage: "chevron.down", action: onMinimise)
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Menu {
-                    Button("Save as Template", systemImage: "square.and.arrow.down") {
-                        showSaveTemplate = true
-                    }
-                    .disabled(!viewModel.canSaveTemplate)
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                }
-                .accessibilityLabel("Workout options")
-            }
         }
         .modifier(SessionEditingModifier(viewModel: viewModel, showPicker: $showPicker,
                                          showSaveTemplate: $showSaveTemplate))
@@ -86,6 +70,65 @@ struct ActiveWorkoutView: View {
         .onAppear(perform: runDebugScenario)
     }
 
+    /// ⌄ minimise on the left; Finish (accent, grey while there are no sets) and ⋯ on the right.
+    private var topBar: some View {
+        HStack(spacing: 12) {
+            Button(action: onMinimise) {
+                Image(systemName: "chevron.down")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(Theme.text)
+                    .frame(width: Theme.minTouch, height: Theme.minTouch)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Minimise workout")
+            Spacer()
+            Menu {
+                Button("Save as Template", systemImage: "square.and.arrow.down") {
+                    showSaveTemplate = true
+                }
+                .disabled(!viewModel.canSaveTemplate)
+            } label: {
+                Image(systemName: "ellipsis")
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(Theme.textMuted)
+                    .frame(width: Theme.minTouch, height: Theme.minTouch)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Workout options")
+            Button(action: tapFinish) {
+                Text("Finish")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(viewModel.totalSets > 0 ? Theme.onAccent : Theme.textMuted)
+                    .padding(.horizontal, 16)
+                    .frame(minHeight: Theme.pillHeight)
+                    .background(viewModel.totalSets > 0 ? Theme.accent : Theme.raised, in: Capsule())
+                    .frame(minHeight: Theme.minTouch)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 8)
+        .background(Theme.background)
+    }
+
+    /// The name as a big title edited in place, the elapsed time on the right, "Started 12:45".
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                WorkoutNameField(viewModel: viewModel, font: .largeTitle.weight(.bold))
+                TimelineView(.periodic(from: .now, by: 30)) { context in
+                    Text(HistoryFormat.minutes(context.date.timeIntervalSince(session.startedAt)))
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(Theme.textMuted)
+                        .fixedSize()
+                }
+            }
+            Text("Started \(HistoryFormat.time(session.startedAt))")
+                .font(.subheadline)
+                .foregroundStyle(Theme.textMuted)
+        }
+    }
+
     private var finishTitle: String {
         viewModel.totalSets == 0 ? "Discard empty workout?" : "Finish workout?"
     }
@@ -106,7 +149,7 @@ struct ActiveWorkoutView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
             HStack(spacing: 10) {
-                RestTimerView(lastSetAt: viewModel.lastSetAt)
+                RestTimerView(lastSetAt: viewModel.restPeriod?.start)
                 Spacer(minLength: 8)
                 Button {
                     showPicker = true
@@ -114,10 +157,7 @@ struct ActiveWorkoutView: View {
                     Label("Add Exercise", systemImage: "plus")
                         .font(.subheadline.weight(.semibold))
                 }
-                .buttonStyle(.borderedProminent)
-                Button("Finish", action: tapFinish)
-                    .font(.subheadline.weight(.semibold))
-                    .buttonStyle(.bordered)
+                .buttonStyle(.bordered)
             }
             .controlSize(.regular)
         }

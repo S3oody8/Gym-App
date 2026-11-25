@@ -19,6 +19,22 @@ enum RestTimerMath {
         return date > now ? date : nil
     }
 
+    /// Rest ring progress: elapsed ÷ alert time, from 0 to 1 (capped at 1).
+    static func progress(since start: Date, alertSeconds: Int, now: Date) -> Double {
+        guard alertSeconds > 0 else { return 1 }
+        return min(1, elapsed(since: start, now: now) / Double(alertSeconds))
+    }
+
+    /// −30 s / +30 s on this rest period's alert time: stays within 0:30–10:00 and never goes
+    /// below the time already elapsed (rounded up to whole seconds). Once more than 10:00 has
+    /// elapsed the alert time no longer changes.
+    static func adjustedAlert(_ alertSeconds: Int, by delta: Int, elapsed: TimeInterval) -> Int {
+        let floorSeconds = Int(elapsed.rounded(.up))
+        guard floorSeconds <= maxAlertSeconds else { return alertSeconds }
+        let moved = min(maxAlertSeconds, max(minAlertSeconds, alertSeconds + delta))
+        return max(moved, floorSeconds)
+    }
+
     /// Snaps to the 15 s grid and clamps to 0:30–10:00.
     static func clampAlert(_ seconds: Int) -> Int {
         let snapped = Int((Double(seconds) / Double(stepSeconds)).rounded()) * stepSeconds
