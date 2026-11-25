@@ -1,7 +1,7 @@
 import SwiftData
 import SwiftUI
 
-/// Finished sessions, newest first. Tap to edit; swipe to delete (asks first, with undo).
+/// Finished sessions, newest first. Tap to edit; swipe left to delete (no dialog, undo toast).
 struct HistoryTabView: View {
     @Environment(\.modelContext) private var context
     @Query(
@@ -11,7 +11,6 @@ struct HistoryTabView: View {
     private var sessions: [WorkoutSession]
     @State private var viewModel = HistoryViewModel()
     @State private var path: [WorkoutSession] = []
-    @State private var confirmDelete: WorkoutSession?
     /// Deleted once the detail screen has been popped, so no view reads a deleted session.
     @State private var deleteAfterPop: WorkoutSession?
     @State private var renaming: WorkoutSession?
@@ -28,9 +27,9 @@ struct HistoryTabView: View {
                         NavigationLink(value: session) {
                             HistoryRowView(session: session)
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button("Delete", systemImage: "trash", role: .destructive) {
-                                confirmDelete = session
+                                viewModel.delete(session, in: context)
                             }
                             Button("Rename", systemImage: "pencil") {
                                 renameText = session.name
@@ -56,18 +55,6 @@ struct HistoryTabView: View {
                 }
             }
             .animation(.snappy, value: viewModel.deletedSnapshot)
-            .confirmationDialog(
-                "Delete this workout?",
-                isPresented: Binding(get: { confirmDelete != nil }, set: { if !$0 { confirmDelete = nil } }),
-                titleVisibility: .visible
-            ) {
-                Button("Delete Workout", role: .destructive) {
-                    if let session = confirmDelete { viewModel.delete(session, in: context) }
-                    confirmDelete = nil
-                }
-            } message: {
-                Text("All its exercises and sets will be deleted. You can undo right after.")
-            }
             .alert("Rename Workout", isPresented: Binding(
                 get: { renaming != nil }, set: { if !$0 { renaming = nil } }
             )) {
