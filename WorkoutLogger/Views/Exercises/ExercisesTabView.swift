@@ -1,7 +1,9 @@
 import SwiftData
 import SwiftUI
 
-/// Exercise library: search, add, edit, delete (no history) or archive (has history).
+/// Exercise library: large title with a round +, search, a RECENT FIRST list (name and the
+/// date it was last used), and archived exercises in their own section at the bottom.
+/// Delete (no history) or archive (has history) by swiping.
 struct ExercisesTabView: View {
     @Environment(\.modelContext) private var context
     @Query private var exercises: [Exercise]
@@ -14,20 +16,25 @@ struct ExercisesTabView: View {
     var body: some View {
         NavigationStack(path: $path) {
             list
+                .scrollContentBackground(.hidden)
+                .background(Theme.background)
                 .navigationDestination(for: Exercise.self) { exercise in
                     ExerciseProgressView(exercise: exercise)
                 }
                 .navigationTitle("Exercises")
                 .searchable(text: $viewModel.searchText, prompt: "Search exercises")
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Toggle(isOn: $viewModel.showArchived) {
-                            Label("Show Archived", systemImage: "archivebox")
-                        }
-                        .toggleStyle(.button)
-                    }
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Add Exercise", systemImage: "plus") { isAdding = true }
+                        Button {
+                            isAdding = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.headline)
+                                .foregroundStyle(Theme.onAccent)
+                                .frame(width: 32, height: 32)
+                                .background(Theme.accent, in: Circle())
+                        }
+                        .accessibilityLabel("New exercise")
                     }
                 }
                 .sheet(isPresented: $isAdding) {
@@ -81,35 +88,34 @@ struct ExercisesTabView: View {
             ContentUnavailableView {
                 Label("No Exercises", systemImage: "dumbbell")
             } description: {
-                Text("Add your first exercise.")
-            } actions: {
-                Button("Add Exercise") { isAdding = true }
-                    .buttonStyle(.borderedProminent)
+                Text("Add your first exercise with +.")
             }
         } else if active.isEmpty && archived.isEmpty && !viewModel.searchText.isEmpty {
             ContentUnavailableView.search(text: viewModel.searchText)
-        } else if active.isEmpty && archived.isEmpty {
-            ContentUnavailableView {
-                Label("All Exercises Archived", systemImage: "archivebox")
-            } actions: {
-                Button("Show Archived") { viewModel.showArchived = true }
-                    .buttonStyle(.borderedProminent)
-            }
         } else {
             List {
-                Section {
-                    ForEach(active) { exercise in
-                        row(exercise)
+                if !active.isEmpty {
+                    Section {
+                        ForEach(active) { exercise in
+                            row(exercise)
+                        }
+                    } header: {
+                        SectionLabel(viewModel.isSearching ? "Results" : "Recent first")
                     }
+                    .listRowBackground(Theme.surface)
                 }
                 if !archived.isEmpty {
-                    Section("Archived") {
+                    Section {
                         ForEach(archived) { exercise in
                             row(exercise)
                         }
+                    } header: {
+                        SectionLabel("Archived")
                     }
+                    .listRowBackground(Theme.surface)
                 }
             }
+            .listStyle(.insetGrouped)
         }
     }
 
@@ -117,16 +123,17 @@ struct ExercisesTabView: View {
         NavigationLink(value: exercise) {
             ExerciseRowView(exercise: exercise, query: viewModel.searchText)
         }
+        .listRowSeparatorTint(Theme.hairline)
         .swipeActions(edge: .leading) {
             Button("Edit", systemImage: "pencil") { editing = exercise }
-                .tint(.blue)
+                .tint(Theme.raised)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if exercise.isArchived {
                 Button("Unarchive", systemImage: "tray.and.arrow.up") {
                     viewModel.setArchived(false, for: exercise, in: context)
                 }
-                .tint(.blue)
+                .tint(Theme.raised)
             } else if exercise.hasHistory {
                 Button("Archive", systemImage: "archivebox") {
                     viewModel.setArchived(true, for: exercise, in: context)
@@ -136,6 +143,7 @@ struct ExercisesTabView: View {
                 Button("Delete", systemImage: "trash", role: .destructive) {
                     pendingDelete = exercise
                 }
+                .tint(Theme.destructive)
             }
         }
     }

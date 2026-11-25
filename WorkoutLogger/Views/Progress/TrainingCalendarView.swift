@@ -56,13 +56,13 @@ struct TrainingCalendarView: View {
         } label: {
             Text("\(calendar.component(.day, from: day))")
                 .font(.subheadline.monospacedDigit().weight(trained ? .semibold : .regular))
-                .foregroundStyle(trained ? Color.white : (isToday ? Color.accentColor : Color.primary))
+                .foregroundStyle(trained ? Theme.onAccent : (isToday ? Theme.accent : Theme.text))
                 .frame(width: 34, height: 34)
                 .background {
                     if trained {
-                        Circle().fill(Color.accentColor)
+                        Circle().fill(Theme.accent)
                     } else if isToday {
-                        Circle().strokeBorder(Color.accentColor, lineWidth: 1.5)
+                        Circle().strokeBorder(Theme.accent, lineWidth: 1.5)
                     }
                 }
                 .frame(maxWidth: .infinity)

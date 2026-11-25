@@ -27,22 +27,28 @@ struct ExerciseProgressView: View {
                 .pickerStyle(.segmented)
             } footer: {
                 Text(footer)
+                    .foregroundStyle(Theme.textSubtle)
             }
+            .listRowBackground(Theme.surface)
             ForEach(viewModel.history, id: \.session.id) { group in
                 Section {
+                    SetTableHeader()
                     ForEach(Array(group.sets.enumerated()), id: \.element.id) { index, set in
-                        SetRowView(number: index + 1, values: set.values, badges: badges[set.id] ?? [])
-                            .listRowInsets(EdgeInsets(top: 4, leading: 12, bottom: 4, trailing: 12))
+                        SetTableRow(number: index + 1, values: set.values, badges: badges[set.id] ?? [])
                     }
                 } header: {
-                    Text(SessionMetrics.detailTitle(name: group.session.name, date: group.session.startedAt))
+                    Text("\(SessionMetrics.title(name: group.session.name)) · \(HistoryFormat.day(group.session.startedAt))")
                         .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(Color.accentColor)
+                        .foregroundStyle(Theme.textMuted)
                         .textCase(nil)
                 }
+                .listRowBackground(Theme.surface)
+                .listRowSeparatorTint(Theme.hairline)
             }
         }
         .listSectionSpacing(.compact)
+        .scrollContentBackground(.hidden)
+        .background(Theme.background)
         .environment(\.defaultMinListRowHeight, 34)
         .navigationTitle(viewModel.exercise.name)
         .navigationBarTitleDisplayMode(.inline)

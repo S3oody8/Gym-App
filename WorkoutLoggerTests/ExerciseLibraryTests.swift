@@ -87,9 +87,7 @@ final class ExerciseLibraryTests: XCTestCase {
         vm.setArchived(true, for: ex, in: context)
         XCTAssertTrue(ex.isArchived)
         XCTAssertTrue(vm.visibleActive([ex]).isEmpty)
-        XCTAssertTrue(vm.visibleArchived([ex]).isEmpty, "hidden unless Show Archived is on")
-        vm.showArchived = true
-        XCTAssertEqual(vm.visibleArchived([ex]).count, 1)
+        XCTAssertEqual(vm.visibleArchived([ex]).count, 1, "own section at the bottom")
         vm.searchText = "squat"
         XCTAssertTrue(vm.visibleArchived([ex]).isEmpty, "search hides archived")
         XCTAssertEqual(entry.orderedSets.count, 1, "history kept")

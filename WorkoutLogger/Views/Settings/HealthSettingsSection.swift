@@ -19,7 +19,7 @@ struct HealthSettingsSection: View {
                     .foregroundStyle(.secondary)
             }
         } header: {
-            Text("Apple Health")
+            SectionLabel("Apple Health")
         } footer: {
             if let errorMessage {
                 Text(errorMessage).foregroundStyle(.red)

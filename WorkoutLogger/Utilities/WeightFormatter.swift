@@ -12,6 +12,11 @@ enum WeightFormatter {
         kg.formatted(style)
     }
 
+    /// "82.5 × 8"
+    static func spaced(weight: Double, reps: Int) -> String {
+        "\(string(weight)) × \(reps)"
+    }
+
     /// Compact "weight×reps", e.g. "80×8".
     static func compact(weight: Double, reps: Int) -> String {
         "\(string(weight))×\(reps)"

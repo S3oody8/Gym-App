@@ -1,19 +1,24 @@
 import SwiftUI
 
-/// One row in the exercise list: name (search matches highlighted), then equipment underneath.
+/// One row in an exercise list: the name (search matches highlighted) and, on the right, the
+/// date it was last used (nothing if never used).
 struct ExerciseRowView: View {
     let exercise: Exercise
     var query: String = ""
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: 8) {
             HighlightedNameText(name: exercise.name, query: query)
                 .font(.body)
-            Text(exercise.equipment.rawValue)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Theme.text)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if let lastUsed = exercise.lastUsed {
+                Text(HistoryFormat.day(lastUsed))
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(Theme.textSubtle)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minHeight: Theme.minTouch)
         .contentShape(Rectangle())
     }
 }

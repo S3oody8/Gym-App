@@ -43,4 +43,9 @@ final class Exercise {
 
     /// True if the exercise appears in any session. Such exercises can be archived but not deleted.
     var hasHistory: Bool { !sessionEntries.isEmpty }
+
+    /// Start of the most recent session with at least one set of this exercise (not stored).
+    var lastUsed: Date? {
+        sessionEntries.filter { !$0.sets.isEmpty }.compactMap { $0.session?.startedAt }.max()
+    }
 }

@@ -1,7 +1,8 @@
 import SwiftData
 import SwiftUI
 
-/// Add / edit form for an exercise, with Archive / Unarchive / Delete for existing ones.
+/// Add / edit form for an exercise (name only; equipment and increment are hidden), with
+/// Archive / Unarchive / Delete for existing ones.
 struct ExerciseEditorView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
@@ -31,27 +32,7 @@ struct ExerciseEditorView: View {
                 } footer: {
                     if validationError == .duplicateName {
                         Text("An exercise with this name already exists.")
-                            .foregroundStyle(.red)
-                    }
-                }
-                Section {
-                    Picker("Equipment", selection: $viewModel.draft.equipment) {
-                        ForEach(Equipment.allCases) { equipment in
-                            Text(equipment.rawValue).tag(equipment)
-                        }
-                    }
-                    LabeledContent("Weight increment") {
-                        HStack(spacing: 4) {
-                            TextField("2.5", text: $viewModel.draft.incrementText)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
-                            Text("kg").foregroundStyle(.secondary)
-                        }
-                    }
-                } footer: {
-                    if validationError == .invalidIncrement {
-                        Text("Enter a weight increment greater than 0.")
-                            .foregroundStyle(.red)
+                            .foregroundStyle(Theme.destructive)
                     }
                 }
                 if let exercise = viewModel.exercise {

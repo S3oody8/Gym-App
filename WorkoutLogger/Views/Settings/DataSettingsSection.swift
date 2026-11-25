@@ -41,9 +41,10 @@ struct DataSettingsSection: View {
             }
             Toggle("Weekly backup reminder", isOn: $reminderEnabled)
         } header: {
-            Text("Data")
+            SectionLabel("Data")
         } footer: {
             Text("Import takes a backup (JSON) or a workout CSV.")
+                .foregroundStyle(Theme.textSubtle)
         }
         .onChange(of: reminderEnabled) { _, enabled in
             if enabled { RestAlertNotifier.shared.requestAuthorization() }
