@@ -8,7 +8,7 @@ SPEC.md is **what** to build. This file is **how** to work. Read both fully at t
 - When you make an assumption that the spec doesn't cover, list it in your end-of-step summary.
 
 ## 2. Environment (important)
-- Machine: Scaleway cloud Mac mini **M1, 8 GB RAM, 256 GB disk**, rented by the day. The user connects by VNC and often drives you from his phone, so he cannot easily look at the simulator.
+- Machine: Scaleway cloud Mac mini (M1 or M2, 8 GB+ RAM), rented by the day. The user connects by remote desktop and often drives you from his phone, so he cannot easily look at the simulator.
 - The machine is **wiped when deleted**. Anything not pushed to GitHub is lost.
 - 8 GB RAM is tight:
   - Build and test from the CLI with `xcodebuild`. Do not open the Xcode GUI.
@@ -17,7 +17,7 @@ SPEC.md is **what** to build. This file is **how** to work. Read both fully at t
 
 ## 3. Project setup
 - Use **XcodeGen** (`brew install xcodegen`) to define the project in `project.yml`, then run `xcodegen generate`. Commit `project.yml`. Do not hand-edit `.pbxproj`. Regenerate after adding files or targets.
-- Targets: `WorkoutLogger` (iOS app), `WorkoutLoggerTests` (unit tests).
+- Targets: `WorkoutLogger` (iOS app), `WorkoutLoggerTests` (unit tests), and from v1.1 step C2 `RestTimerWidget` (widget extension for the rest-timer Live Activity, bundle ID `com.saad.workoutlogger.RestTimer`).
 - Bundle ID: `com.saad.workoutlogger`. **Never change it**: changing it wipes all data on the iPhone when re-sideloading.
 - Deployment target: iOS 18.0. Device family: iPhone only. Orientation: portrait only.
 - Do **not** add iCloud, Push Notifications or any capability that needs a paid Apple Developer account. Local notifications are fine (no capability needed). HealthKit: see SPEC section 9.
@@ -44,14 +44,14 @@ xcodebuild -project WorkoutLogger.xcodeproj -scheme WorkoutLogger \
 - Every SwiftData model has `id: UUID`. Weights are stored as `Double` in kg.
 - Keep pure logic (e1RM, PR detection, weekly volume, CSV parsing, JSON export/import) in plain Swift types with no UI. Those parts must be unit tested.
 - One type per file. Folder layout: `Models/`, `ViewModels/`, `Views/<Feature>/`, `Services/`, `Utilities/`.
-- Never delete or rename a model property without a SwiftData migration plan. Ask first. Real workout data will be on the phone.
+- Never delete or rename a model property without a SwiftData migration plan. Ask first. Real workout data is on the phone. v1.1 needs **no** model changes: settings go in UserDefaults.
 - Persist after every set change (crash safety, SPEC section 2).
 
 ## 6. Workflow
-- Work through SPEC.md "Build order" **one step at a time**.
+- v1.0 is done. For v1.1, work through **PLAN-v1.1.md** (A1 → C3) **one step at a time**. Read SPEC.md, this file and PLAN-v1.1.md fully before starting.
 - After each step: build clean → run tests → `git add -A && git commit -m "<step>: <what>"` → `git push`.
 - Then **stop** and give a short summary: what's done, assumptions made, and what's next. Wait for "continue".
-- Step 7 (Shrug import): do not start until the file `Fixtures/shrug_sample.csv` exists in the repo. If it's missing, stop and ask for it.
+- Never show the word "Shrug" in the app's UI (labels, titles, messages, errors, prompts). Internal type names may keep it.
 
 ## 7. End of session (the user will say "wrap up")
 1. Build and test pass.
