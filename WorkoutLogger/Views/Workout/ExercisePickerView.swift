@@ -18,7 +18,7 @@ struct ExercisePickerView: View {
                     onPick(exercise)
                     dismiss()
                 } label: {
-                    ExerciseRowView(exercise: exercise)
+                    ExerciseRowView(exercise: exercise, query: searchText)
                 }
                 .tint(.primary)
             }

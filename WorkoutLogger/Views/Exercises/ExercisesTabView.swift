@@ -115,7 +115,7 @@ struct ExercisesTabView: View {
 
     private func row(_ exercise: Exercise) -> some View {
         NavigationLink(value: exercise) {
-            ExerciseRowView(exercise: exercise)
+            ExerciseRowView(exercise: exercise, query: viewModel.searchText)
         }
         .swipeActions(edge: .leading) {
             Button("Edit", systemImage: "pencil") { editing = exercise }
