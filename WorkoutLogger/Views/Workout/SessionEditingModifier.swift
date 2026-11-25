@@ -6,12 +6,14 @@ struct SessionEditingModifier: ViewModifier {
     @Binding var showPicker: Bool
     @Binding var showSaveTemplate: Bool
     @State private var templateName = ""
+    /// Entry added from the picker; its set pad opens once the picker sheet has closed.
+    @State private var pendingSetPadEntryID: UUID?
 
     func body(content: Content) -> some View {
         content
-            .sheet(isPresented: $showPicker) {
+            .sheet(isPresented: $showPicker, onDismiss: openPendingSetPad) {
                 ExercisePickerView { exercise in
-                    viewModel.addExercise(exercise)
+                    pendingSetPadEntryID = viewModel.addExercise(exercise)
                 }
             }
             .sheet(item: $viewModel.entryRequest) { request in
@@ -40,5 +42,11 @@ struct SessionEditingModifier: ViewModifier {
                 Text("Your last change is not saved yet and may be lost if the app closes.\n\n\(viewModel.saveErrorMessage ?? "")")
             }
             .sensoryFeedback(.impact(weight: .medium), trigger: viewModel.addedSetCount)
+    }
+
+    private func openPendingSetPad() {
+        guard let id = pendingSetPadEntryID else { return }
+        pendingSetPadEntryID = nil
+        viewModel.openAddSet(forEntryID: id)
     }
 }

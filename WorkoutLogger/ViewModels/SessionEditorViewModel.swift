@@ -100,11 +100,22 @@ final class SessionEditorViewModel {
 
     // MARK: Exercises
 
-    func addExercise(_ exercise: Exercise) {
+    /// Adds the exercise to the session and returns the new entry's id (nil if saving failed).
+    @discardableResult
+    func addExercise(_ exercise: Exercise) -> UUID? {
+        var id: UUID?
         perform {
             let entry = try store.addEntry(exercise, to: session)
             showUndo(.addedEntry(entryID: entry.id))
+            id = entry.id
         }
+        return id
+    }
+
+    /// Opens the set pad for a newly added entry (called once the picker has closed).
+    func openAddSet(forEntryID id: UUID) {
+        guard let entry = entry(withID: id) else { return }
+        openAddSet(for: entry)
     }
 
     func removeEntry(_ entry: SessionExercise) {

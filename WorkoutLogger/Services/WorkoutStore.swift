@@ -136,6 +136,22 @@ struct WorkoutStore {
         }
     }
 
+    // MARK: Exercises
+
+    /// Creates an exercise with only a name (equipment and increment keep their hidden
+    /// defaults). Throws `ExerciseDraft.ValidationError` for a blank or duplicate name
+    /// (archived exercises included).
+    @discardableResult
+    func createExercise(named name: String) throws -> Exercise {
+        let draft = ExerciseDraft(name: name)
+        let existing = try context.fetch(FetchDescriptor<Exercise>()).map(\.name)
+        if let error = draft.validate(existingNames: existing) { throw error }
+        let exercise = Exercise(name: draft.trimmedName, equipment: draft.equipment)
+        context.insert(exercise)
+        try save()
+        return exercise
+    }
+
     // MARK: Entries
 
     @discardableResult
