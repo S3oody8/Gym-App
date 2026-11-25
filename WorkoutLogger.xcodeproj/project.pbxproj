@@ -27,12 +27,15 @@
 		1D0B0C5EB8FEBD31284FD53F /* RestAlertScheduling.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC0D4D86048468F67AFD2DF /* RestAlertScheduling.swift */; };
 		1E013D04EFF2E877541A04EA /* ProgressTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06E788D0EC9D8FD207EF144 /* ProgressTabView.swift */; };
 		2099BB0DD677585E1CB9EFC9 /* ExerciseEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169588E0F964B1604D940F4A /* ExerciseEditorView.swift */; };
+		20D2E707E2007B61A26B1EF6 /* RestTimerWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = E20532024235C119C6FA4E33 /* RestTimerWidgetBundle.swift */; };
 		20FCEED666DC5EF336EEEA94 /* ExercisesTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDB055B5A0E5DF84DDE554A7 /* ExercisesTabView.swift */; };
 		2165098758C84046B7F018E8 /* Hairline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92FF1FD35D3C7AEFB1B38954 /* Hairline.swift */; };
 		253F4982D080B5ADF605A83F /* ShrugRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91CC47326A5BC2CE98CBBBD /* ShrugRow.swift */; };
 		2653CEA50A5BE6B45C232AA1 /* WorkoutsTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1E34449EAE66BCB4CDDAEA /* WorkoutsTabView.swift */; };
+		279E5204BE6DEFFEA8E928F5 /* RestTimerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D911F5CE83F5C3061E3913C /* RestTimerAttributes.swift */; };
 		27C10972C3C23199A34A87E4 /* ProgressRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79CFF31B3CB8D66D35A640B /* ProgressRange.swift */; };
 		28299C3F6129F911A8205BC5 /* SwitchRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67C2A62EA75EA08530BC943C /* SwitchRow.swift */; };
+		29CD4A70797436BDD85A4285 /* RestTimerAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D911F5CE83F5C3061E3913C /* RestTimerAttributes.swift */; };
 		2AFFED223A411AD295E567A1 /* SetTableHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F7477C343708954FD95496F /* SetTableHeader.swift */; };
 		2C6D6921E07227846BCBB9F6 /* ShrugImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD2477A8FB4BBDFDC6CC955 /* ShrugImportTests.swift */; };
 		2C7B851B1B6E01150027B895 /* BackupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF2F2CB5D6358D27A6039A1 /* BackupTests.swift */; };
@@ -72,9 +75,11 @@
 		5ED5CDEF10D6A203AFDEBFA6 /* ModelSchemaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5097866D9CD15CC8510ECBC8 /* ModelSchemaTests.swift */; };
 		5FD843D18248B6AC53C11A26 /* ShrugImportPlanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = B31180710DA75969ED976889 /* ShrugImportPlanner.swift */; };
 		623FDAF9502D05AA34FA7F45 /* RestTimerMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2242F74F3EC128BFE157B97 /* RestTimerMath.swift */; };
+		62FECE7B7E92116F8B13B98B /* RestTimerFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA953495CA083B8C0AB57121 /* RestTimerFormat.swift */; };
 		63B702D822C49C3993345694 /* ShrugImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBC8DE4AE4F63A277318A43B /* ShrugImporter.swift */; };
 		64FE94912B4451F0EAD6B626 /* ExerciseCreation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D5613B2450F351BACB9D7EC /* ExerciseCreation.swift */; };
 		67A2B267A2B77DDE8790162C /* ProgressSessionInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771985404826CC96163F629 /* ProgressSessionInput.swift */; };
+		6880B142D248D7B91FB3B559 /* RestTimerText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0AAF0E61AC59498034BF1DD /* RestTimerText.swift */; };
 		69398ADE75467778445F3037 /* NoHealthExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457936A5D12239FE31E2B818 /* NoHealthExporter.swift */; };
 		6AEE9C64F3C90491E3307345 /* ShrugImportResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE357531BC75443FAD9C5C06 /* ShrugImportResult.swift */; };
 		6B4883759E47AF4C0965F036 /* HistoryFormatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEDE2809E9D4E74C70B80AB /* HistoryFormatTests.swift */; };
@@ -104,6 +109,7 @@
 		8FA8544DC459814237220BF5 /* SetEntryFormTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C60CA8FFA0F60CA6B5FE39F2 /* SetEntryFormTests.swift */; };
 		92A6CDF19B39F872B1C2E95C /* ExerciseSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = E24E84AFC5A4FCDFF5C08996 /* ExerciseSearch.swift */; };
 		934344E82FB9A7AD93FB8A62 /* NotificationPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74532FA1480E68191A2E373 /* NotificationPresenter.swift */; };
+		93ED750DE83F9B1C9A86D756 /* RestTimerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E2C70C81832C0657070468B /* RestTimerLiveActivity.swift */; };
 		93F59FBC71FB31463B4E541B /* BestSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEFD2A4DAD758F4B209CE70A /* BestSet.swift */; };
 		953E8E731D645A6DECA00390 /* SetEntryRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1AF10C94959393E1CEAF3E5 /* SetEntryRequest.swift */; };
 		97ED2CBCC89736645CB1183A /* RestTimerStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D89877931691F9050B4962F /* RestTimerStore.swift */; };
@@ -138,6 +144,7 @@
 		C98DACAC18C0D6E889465F31 /* SessionExercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAEAE10637C7ADD1D95D8ED3 /* SessionExercise.swift */; };
 		CBF61ED92878F59EE29A7C2F /* ShrugImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E9083FE69551577A1BAD78 /* ShrugImportViewModel.swift */; };
 		CCC8D3F56CE59F9AB033315A /* ExerciseProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EC4CCBCC26356F014B57472 /* ExerciseProgressView.swift */; };
+		CFBD2F289D49616EBCB287BA /* RestTimerLockScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBB5D97FCC526CAC108A0364 /* RestTimerLockScreenView.swift */; };
 		D012AD903FD589DD3B525B78 /* KeypadKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 099A6F8710474044DB607506 /* KeypadKey.swift */; };
 		D07D6D95DD3B3EF40356D248 /* SetEntrySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A897AA70D291C7D689BCDBC /* SetEntrySheet.swift */; };
 		D0A3ADFE359B2D900D075F64 /* DataSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B219D534811E67A44D02BD /* DataSettingsSection.swift */; };
@@ -159,12 +166,14 @@
 		E4E2477C49A552BCDF2C268C /* HealthKitExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4DEC47B96E07EB1579FC451 /* HealthKitExporter.swift */; };
 		E859165CCEE46062A7B78A86 /* ProgressChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D65EA32DDADD2AD83EE5A688 /* ProgressChartView.swift */; };
 		E945F512850F54E3A9C07D9C /* ProgressQueries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E4065023C9559520F81926 /* ProgressQueries.swift */; };
+		EBFED1EB3D2E0B0A01F439DB /* RestTimerWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = F101C46A1EC03EBB0D256788 /* RestTimerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ECE5203C4B94672FF00CFCC0 /* QuickAddRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990A5DA3191CE9D708BE358 /* QuickAddRow.swift */; };
 		ECFF7E72C051CE36E55182FD /* DebugScenario.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CBA56E91CA14E161F075FFE /* DebugScenario.swift */; };
 		EE20CA58E9A4E0DF73C231E4 /* PRCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0D55D51F10A662F6FC1E85 /* PRCounter.swift */; };
 		EE5B2433635E09DFE0607BE4 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE5D5DD2C43C8B5A716274C /* RootTabView.swift */; };
 		F00FAC2FE20BCD0D01A83D93 /* ShrugMergePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142328412E3B99164ED82282 /* ShrugMergePickerView.swift */; };
 		F1A6FECF102CA9C0E50B40CD /* ExerciseSearchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFB513EFAE9F3BCF9F81F45C /* ExerciseSearchTests.swift */; };
+		F4F9A087F711DE2040982EA8 /* RestTimerColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2730C27B693A0EB67D6BA8E5 /* RestTimerColors.swift */; };
 		F742E18C4E0DF5B084AA6A6D /* SetTableRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3EC7E513A7860EFEA6E0F32 /* SetTableRow.swift */; };
 		F8F74E23B4CF97116894DF5E /* AddExerciseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270DE0632A64AD8A35E2B7C7 /* AddExerciseCard.swift */; };
 		FB6CF4EB5F5D810734ADB0A0 /* SessionEditingModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 242EB4A71E6C78DB49ED8D9E /* SessionEditingModifier.swift */; };
@@ -182,7 +191,28 @@
 			remoteGlobalIDString = 6A2D1C05127533291224D985;
 			remoteInfo = WorkoutLogger;
 		};
+		DAA90E59B37B48344198D8A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ADE179F30C20D91A936668D2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B3C1CE081A228D00907762C;
+			remoteInfo = RestTimerWidget;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		557CE1542A91574FDB543D68 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EBFED1EB3D2E0B0A01F439DB /* RestTimerWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		032504BD2594C850A1F8FF45 /* ProgressMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressMath.swift; sourceTree = "<group>"; };
@@ -204,12 +234,14 @@
 		1A897AA70D291C7D689BCDBC /* SetEntrySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEntrySheet.swift; sourceTree = "<group>"; };
 		1D628EEB5FC78A2B02C34752 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1D89877931691F9050B4962F /* RestTimerStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerStore.swift; sourceTree = "<group>"; };
+		1E2C70C81832C0657070468B /* RestTimerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerLiveActivity.swift; sourceTree = "<group>"; };
 		20DF9E75954EB32B2601B0E2 /* WorkoutUndoAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutUndoAction.swift; sourceTree = "<group>"; };
 		218B3817C4531D59227EF27A /* Exercise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exercise.swift; sourceTree = "<group>"; };
 		233E5448746890A93A8B93DE /* HealthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthTests.swift; sourceTree = "<group>"; };
 		242EB4A71E6C78DB49ED8D9E /* SessionEditingModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionEditingModifier.swift; sourceTree = "<group>"; };
 		264ECEAD93035C5FFB4746B0 /* RestActivityControlling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestActivityControlling.swift; sourceTree = "<group>"; };
 		270DE0632A64AD8A35E2B7C7 /* AddExerciseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExerciseCard.swift; sourceTree = "<group>"; };
+		2730C27B693A0EB67D6BA8E5 /* RestTimerColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerColors.swift; sourceTree = "<group>"; };
 		280BAC08CEDABC4DE87F75FF /* CreateExerciseRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateExerciseRow.swift; sourceTree = "<group>"; };
 		2B1414B2F4633CBA4A77AD80 /* ActiveWorkoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveWorkoutView.swift; sourceTree = "<group>"; };
 		2DDA561D29B54CE49875D9EC /* ProgressSummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressSummaryTests.swift; sourceTree = "<group>"; };
@@ -238,6 +270,7 @@
 		4F68D992966B6AE65AAF863D /* HealthWorkoutPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthWorkoutPlan.swift; sourceTree = "<group>"; };
 		5097866D9CD15CC8510ECBC8 /* ModelSchemaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelSchemaTests.swift; sourceTree = "<group>"; };
 		54791D5B6A71DFE6940796CA /* NumericKeypadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumericKeypadView.swift; sourceTree = "<group>"; };
+		59C1ED6CA21A2DF0D28E9295 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		5B0C3AE5C67C50602FCF4D14 /* SessionNameAndLoadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionNameAndLoadTests.swift; sourceTree = "<group>"; };
 		5B21408ADF5080E31F785632 /* SessionMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionMetrics.swift; sourceTree = "<group>"; };
 		5BB8B1F82D2233EF70526692 /* SetEntryFieldBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEntryFieldBox.swift; sourceTree = "<group>"; };
@@ -255,6 +288,7 @@
 		6ABDE65758D1F96933DD5804 /* PRBadges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PRBadges.swift; sourceTree = "<group>"; };
 		6B42C7AAE09230257AD4F0A2 /* TrainingCalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingCalendarView.swift; sourceTree = "<group>"; };
 		6BFE2F21FE7FA49422AE9AAC /* TemplatePlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplatePlan.swift; sourceTree = "<group>"; };
+		6D911F5CE83F5C3061E3913C /* RestTimerAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerAttributes.swift; sourceTree = "<group>"; };
 		7045F0852F721313C4A8D47A /* WorkoutNameField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutNameField.swift; sourceTree = "<group>"; };
 		72B7264B52033708D5E6C038 /* ExerciseProgressViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseProgressViewModel.swift; sourceTree = "<group>"; };
 		747E68589B08743837370153 /* EntrySnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrySnapshot.swift; sourceTree = "<group>"; };
@@ -329,6 +363,7 @@
 		DD0AD0F78AB5D4BC76A3EA29 /* ShrugPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugPlan.swift; sourceTree = "<group>"; };
 		E009E93F285A3C3394E7AD45 /* QuickButtonsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickButtonsTests.swift; sourceTree = "<group>"; };
 		E1BFAD0684261D987FDCF56F /* ShrugMappingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugMappingView.swift; sourceTree = "<group>"; };
+		E20532024235C119C6FA4E33 /* RestTimerWidgetBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerWidgetBundle.swift; sourceTree = "<group>"; };
 		E24E84AFC5A4FCDFF5C08996 /* ExerciseSearch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseSearch.swift; sourceTree = "<group>"; };
 		E3682C219A08CDBCC2E95388 /* RestDock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestDock.swift; sourceTree = "<group>"; };
 		E45EBD7340A1FBAA4D2B3CAF /* DurationFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DurationFormatter.swift; sourceTree = "<group>"; };
@@ -336,10 +371,13 @@
 		E72A2C7D9175E11098511A08 /* WeightFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeightFormatter.swift; sourceTree = "<group>"; };
 		E756BF93088D8D51BA954BCA /* HealthSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthSettingsSection.swift; sourceTree = "<group>"; };
 		EA73E77233A7467DF4A2AE47 /* HistoryRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryRowView.swift; sourceTree = "<group>"; };
+		EBB5D97FCC526CAC108A0364 /* RestTimerLockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerLockScreenView.swift; sourceTree = "<group>"; };
 		EBC8DE4AE4F63A277318A43B /* ShrugImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugImporter.swift; sourceTree = "<group>"; };
 		EE14BDEBF14110EC7EDBC60F /* FakeRestAlerts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeRestAlerts.swift; sourceTree = "<group>"; };
 		EE4526FEF4CC021432B52626 /* ExercisePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExercisePickerView.swift; sourceTree = "<group>"; };
 		EE70C793C4662273A7FCCF6B /* ShrugExerciseInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugExerciseInfo.swift; sourceTree = "<group>"; };
+		F0AAF0E61AC59498034BF1DD /* RestTimerText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerText.swift; sourceTree = "<group>"; };
+		F101C46A1EC03EBB0D256788 /* RestTimerWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RestTimerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F176884555E2363136BD5978 /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
 		F1AF10C94959393E1CEAF3E5 /* SetEntryRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetEntryRequest.swift; sourceTree = "<group>"; };
 		F2DE8DD6AA26FA199CFBC4CD /* ProgressCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressCard.swift; sourceTree = "<group>"; };
@@ -351,6 +389,7 @@
 		F91CC47326A5BC2CE98CBBBD /* ShrugRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugRow.swift; sourceTree = "<group>"; };
 		F939383938CFF122C1B87FCF /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		F9E9083FE69551577A1BAD78 /* ShrugImportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugImportViewModel.swift; sourceTree = "<group>"; };
+		FA953495CA083B8C0AB57121 /* RestTimerFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestTimerFormat.swift; sourceTree = "<group>"; };
 		FBFBF21FF9F7482C15D283C6 /* ShrugMapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShrugMapping.swift; sourceTree = "<group>"; };
 		FDB055B5A0E5DF84DDE554A7 /* ExercisesTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExercisesTabView.swift; sourceTree = "<group>"; };
 		FDC0D4D86048468F67AFD2DF /* RestAlertScheduling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestAlertScheduling.swift; sourceTree = "<group>"; };
@@ -392,6 +431,14 @@
 				1D628EEB5FC78A2B02C34752 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		3A2651ECDD6DC311E67DBEAE /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				6D911F5CE83F5C3061E3913C /* RestTimerAttributes.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		3B25986DB45806F57F54CF8E /* WorkoutLoggerTests */ = {
@@ -447,6 +494,20 @@
 			path = Workouts;
 			sourceTree = "<group>";
 		};
+		5626DA2BB347ECA717100044 /* RestTimerWidget */ = {
+			isa = PBXGroup;
+			children = (
+				59C1ED6CA21A2DF0D28E9295 /* Info.plist */,
+				2730C27B693A0EB67D6BA8E5 /* RestTimerColors.swift */,
+				FA953495CA083B8C0AB57121 /* RestTimerFormat.swift */,
+				1E2C70C81832C0657070468B /* RestTimerLiveActivity.swift */,
+				EBB5D97FCC526CAC108A0364 /* RestTimerLockScreenView.swift */,
+				F0AAF0E61AC59498034BF1DD /* RestTimerText.swift */,
+				E20532024235C119C6FA4E33 /* RestTimerWidgetBundle.swift */,
+			);
+			path = RestTimerWidget;
+			sourceTree = "<group>";
+		};
 		590DCC37549AB5A985833638 /* Workout */ = {
 			isa = PBXGroup;
 			children = (
@@ -472,6 +533,8 @@
 			isa = PBXGroup;
 			children = (
 				B4D699E0537513A244E09C25 /* Fixtures */,
+				5626DA2BB347ECA717100044 /* RestTimerWidget */,
+				3A2651ECDD6DC311E67DBEAE /* Shared */,
 				A5F0003512CCCE6B8C3CAAE4 /* WorkoutLogger */,
 				3B25986DB45806F57F54CF8E /* WorkoutLoggerTests */,
 				C5463765B78C35AF03076A07 /* Products */,
@@ -656,6 +719,7 @@
 		C5463765B78C35AF03076A07 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				F101C46A1EC03EBB0D256788 /* RestTimerWidget.appex */,
 				CB12D9CE194028A0D166C2D9 /* WorkoutLogger.app */,
 				31410C051F3975C13D1EDC8B /* WorkoutLoggerTests.xctest */,
 			);
@@ -679,16 +743,35 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		2B3C1CE081A228D00907762C /* RestTimerWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 674483520FAAF91D445F91EB /* Build configuration list for PBXNativeTarget "RestTimerWidget" */;
+			buildPhases = (
+				C15772BD5880A80C90101AC6 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RestTimerWidget;
+			packageProductDependencies = (
+			);
+			productName = RestTimerWidget;
+			productReference = F101C46A1EC03EBB0D256788 /* RestTimerWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		6A2D1C05127533291224D985 /* WorkoutLogger */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2494420B31BC9DB241FF2D7A /* Build configuration list for PBXNativeTarget "WorkoutLogger" */;
 			buildPhases = (
 				B36DE22A5F78146C0D95DA8D /* Sources */,
 				CFC977532A40070E0C47498C /* Resources */,
+				557CE1542A91574FDB543D68 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				904EC0EDC47B1B53DF09E6F9 /* PBXTargetDependency */,
 			);
 			name = WorkoutLogger;
 			packageProductDependencies = (
@@ -742,6 +825,7 @@
 			projectRoot = "";
 			targets = (
 				6A2D1C05127533291224D985 /* WorkoutLogger */,
+				2B3C1CE081A228D00907762C /* RestTimerWidget */,
 				C8CFD48891F21B85C9C33F41 /* WorkoutLoggerTests */,
 			);
 		};
@@ -884,6 +968,7 @@
 				6CC1D01F52128898B289ABD8 /* RestPeriod.swift in Sources */,
 				45BE55D771397BAF16FA7B6E /* RestRing.swift in Sources */,
 				7496E7487041699912B41A8F /* RestSheet.swift in Sources */,
+				29CD4A70797436BDD85A4285 /* RestTimerAttributes.swift in Sources */,
 				623FDAF9502D05AA34FA7F45 /* RestTimerMath.swift in Sources */,
 				97ED2CBCC89736645CB1183A /* RestTimerStore.swift in Sources */,
 				EE5B2433635E09DFE0607BE4 /* RootTabView.swift in Sources */,
@@ -944,9 +1029,28 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		C15772BD5880A80C90101AC6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				279E5204BE6DEFFEA8E928F5 /* RestTimerAttributes.swift in Sources */,
+				F4F9A087F711DE2040982EA8 /* RestTimerColors.swift in Sources */,
+				62FECE7B7E92116F8B13B98B /* RestTimerFormat.swift in Sources */,
+				93ED750DE83F9B1C9A86D756 /* RestTimerLiveActivity.swift in Sources */,
+				CFBD2F289D49616EBCB287BA /* RestTimerLockScreenView.swift in Sources */,
+				6880B142D248D7B91FB3B559 /* RestTimerText.swift in Sources */,
+				20D2E707E2007B61A26B1EF6 /* RestTimerWidgetBundle.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		904EC0EDC47B1B53DF09E6F9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2B3C1CE081A228D00907762C /* RestTimerWidget */;
+			targetProxy = DAA90E59B37B48344198D8A5 /* PBXContainerItemProxy */;
+		};
 		951F4C18D1CB15AEBFD21080 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 6A2D1C05127533291224D985 /* WorkoutLogger */;
@@ -971,6 +1075,24 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WorkoutLogger.app/WorkoutLogger";
 			};
 			name = Debug;
+		};
+		1F386C44725595A6E3217F8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				INFOPLIST_FILE = RestTimerWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.saad.workoutlogger.RestTimer;
+				PRODUCT_NAME = RestTimerWidget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
 		};
 		205A50CE5D605DBC9F9A1EFD /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -1001,6 +1123,7 @@
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WorkoutLogger only writes workouts and does not read your health data.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Saves each finished workout to Apple Health as a strength-training workout.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIFileSharingEnabled = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1030,6 +1153,7 @@
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "WorkoutLogger only writes workouts and does not read your health data.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Saves each finished workout to Apple Health as a strength-training workout.";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIFileSharingEnabled = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -1105,6 +1229,24 @@
 			};
 			name = Release;
 		};
+		A3705DA5F9C5564AF283D10A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				INFOPLIST_FILE = RestTimerWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.saad.workoutlogger.RestTimer;
+				PRODUCT_NAME = RestTimerWidget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
 		EE495E2ECF9C8479745669CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1178,6 +1320,15 @@
 			buildConfigurations = (
 				6D97389124D8911F025D612A /* Debug */,
 				2A088634533B7ED0748B1E2B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		674483520FAAF91D445F91EB /* Build configuration list for PBXNativeTarget "RestTimerWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A3705DA5F9C5564AF283D10A /* Debug */,
+				1F386C44725595A6E3217F8A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

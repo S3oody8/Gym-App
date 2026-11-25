@@ -15,6 +15,10 @@ targets:
     platform: iOS
     sources:
       - WorkoutLogger
+      - Shared
+    dependencies:
+      # Always built and embedded; the app only starts activities with LIVEACTIVITY set.
+      - target: RestTimerWidget
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.saad.workoutlogger
@@ -30,14 +34,34 @@ targets:
         # Weekly backups go to Documents, shown in Files under On My iPhone › WorkoutLogger.
         INFOPLIST_KEY_UIFileSharingEnabled: YES
         INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace: YES
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
         INFOPLIST_KEY_NSHealthUpdateUsageDescription: "Saves each finished workout to Apple Health as a strength-training workout."
         INFOPLIST_KEY_NSHealthShareUsageDescription: "WorkoutLogger only writes workouts and does not read your health data."
-        # HealthKit is opt-in at build time (SPEC section 9). Health build:
-        #   SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) HEALTHKIT'
-        #   and sign with WorkoutLogger/WorkoutLogger-Health.entitlements
+        # HealthKit and the Live Activity are opt-in at build time (SPEC sections 9 and 4), e.g.
+        #   SWIFT_ACTIVE_COMPILATION_CONDITIONS='HEALTHKIT LIVEACTIVITY'
+        #   and sign with WorkoutLogger/WorkoutLogger-Health.entitlements (see scripts/build-ipas.sh)
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         ENABLE_PREVIEWS: YES
+  RestTimerWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - RestTimerWidget
+      - Shared
+    info:
+      path: RestTimerWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Rest Timer
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.saad.workoutlogger.RestTimer
+        PRODUCT_NAME: RestTimerWidget
+        TARGETED_DEVICE_FAMILY: "1"
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
   WorkoutLoggerTests:
     type: bundle.unit-test
     platform: iOS

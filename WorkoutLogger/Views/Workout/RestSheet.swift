@@ -6,6 +6,7 @@ struct RestSheet: View {
     let timer: RestTimerStore
     let sessionID: UUID
     @Environment(\.dismiss) private var dismiss
+    @State private var notificationsDenied = false
 
     var body: some View {
         VStack(spacing: 24) {
@@ -33,6 +34,12 @@ struct RestSheet: View {
                 Text("Alert at \(RestTimerMath.format(TimeInterval(rest.alertSeconds)))")
                     .font(.headline.monospacedDigit())
                     .foregroundStyle(Theme.text)
+                if notificationsDenied {
+                    Text("Notifications are off for this app, so the alert can't sound. Turn them on in the iOS Settings app.")
+                        .font(.footnote)
+                        .foregroundStyle(Theme.destructive)
+                        .multilineTextAlignment(.center)
+                }
 
                 HStack(spacing: 12) {
                     adjustButton("−30 s", delta: -30)
@@ -62,6 +69,10 @@ struct RestSheet: View {
         }
         .padding(24)
         .frame(maxWidth: .infinity)
+        .task {
+            let denied = await RestAlertNotifier.shared.isDenied()
+            notificationsDenied = RestAlertSettings.current().enabled && denied
+        }
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
         .presentationBackground(Theme.surface)

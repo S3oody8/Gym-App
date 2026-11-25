@@ -59,6 +59,16 @@ final class RestTimerStore {
         set(period, now: .now)
     }
 
+    /// Re-applies the current period when the app goes to the background or comes back:
+    /// re-schedules a still-future alert and refreshes the Live Activity. Clears a period left
+    /// over from a workout that is no longer active.
+    func resync(activeSessionID: UUID?, now: Date = .now) {
+        guard let period else { return }
+        guard period.sessionID == activeSessionID else { return end() }
+        guard !period.skipped else { return }
+        set(period, now: now)
+    }
+
     /// Finish or discard: clears everything.
     func end() {
         period = nil

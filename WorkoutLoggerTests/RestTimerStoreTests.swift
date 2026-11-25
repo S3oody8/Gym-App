@@ -112,4 +112,25 @@ final class RestTimerStoreTests: XCTestCase {
         store.sync(sessionID: session, lastSetAt: t0, now: t0)
         XCTAssertNil(store.visiblePeriod(for: UUID()))
     }
+
+    func testResyncReschedulesFutureAlertForActiveWorkout() {
+        let store = makeStore()
+        store.sync(sessionID: session, lastSetAt: t0, now: t0)
+        store.adjust(by: 30, now: t0)
+        alerts.cancel() // e.g. lost while the app was in the background
+        store.resync(activeSessionID: session, now: t0.addingTimeInterval(60))
+        XCTAssertEqual(alerts.pending, t0.addingTimeInterval(210), "keeps this period's alert time")
+        store.resync(activeSessionID: session, now: t0.addingTimeInterval(300))
+        XCTAssertNil(alerts.pending, "past alert time: nothing to schedule")
+    }
+
+    func testResyncClearsPeriodOfInactiveWorkoutAndKeepsSkip() {
+        let store = makeStore()
+        store.sync(sessionID: session, lastSetAt: t0, now: t0)
+        store.skip()
+        store.resync(activeSessionID: session, now: t0.addingTimeInterval(10))
+        XCTAssertNil(alerts.pending, "skipped stays skipped")
+        store.resync(activeSessionID: nil, now: t0.addingTimeInterval(10))
+        XCTAssertNil(store.period, "no active workout: cleared")
+    }
 }

@@ -14,6 +14,11 @@ final class RestAlertNotifier: RestAlertScheduling {
         center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
+    /// True when the user has turned notifications off for the app (the alert can't fire).
+    func isDenied() async -> Bool {
+        await center.notificationSettings().authorizationStatus == .denied
+    }
+
     func schedule(at date: Date, restSeconds: Int) {
         let interval = date.timeIntervalSinceNow
         guard interval > 0 else { cancel(); return }
@@ -24,7 +29,15 @@ final class RestAlertNotifier: RestAlertScheduling {
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
         let request = UNNotificationRequest(identifier: Self.identifier, content: content, trigger: trigger)
         center.removePendingNotificationRequests(withIdentifiers: [Self.identifier])
-        center.add(request, withCompletionHandler: nil)
+        let center = center
+        Task {
+            // If permission was never asked (e.g. the workout was resumed after a relaunch),
+            // ask now so this and later alerts can show.
+            if await center.notificationSettings().authorizationStatus == .notDetermined {
+                _ = try? await center.requestAuthorization(options: [.alert, .sound])
+            }
+            try? await center.add(request)
+        }
     }
 
     func cancel() {
