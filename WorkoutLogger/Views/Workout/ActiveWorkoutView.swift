@@ -11,6 +11,7 @@ struct ActiveWorkoutView: View {
     @State private var confirmFinish = false
     @State private var askName = false
     @State private var finishName = ""
+    @State private var showRest = false
 
     let onMinimise: () -> Void
 
@@ -148,22 +149,16 @@ struct ActiveWorkoutView: View {
                 UndoToastView(message: action.message, onUndo: viewModel.undo)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            HStack(spacing: 10) {
-                RestTimerView(lastSetAt: viewModel.restPeriod?.start)
-                Spacer(minLength: 8)
-                Button {
-                    showPicker = true
-                } label: {
-                    Label("Add Exercise", systemImage: "plus")
-                        .font(.subheadline.weight(.semibold))
-                }
-                .buttonStyle(.bordered)
-            }
-            .controlSize(.regular)
+            RestDock(rest: viewModel.restPeriod, onRest: { showRest = true },
+                     onAddExercise: { showPicker = true })
         }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(.bar)
+        .padding(.horizontal, 16)
+        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .background(Theme.background)
+        .sheet(isPresented: $showRest) {
+            RestSheet(timer: viewModel.restTimer, sessionID: session.id)
+        }
         .animation(.snappy, value: viewModel.undoAction)
     }
 

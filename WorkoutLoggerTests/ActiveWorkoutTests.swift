@@ -127,9 +127,7 @@ final class ActiveWorkoutTests: XCTestCase {
         let vm = SessionEditorViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.addExercise(bench)
         let entry = try XCTUnwrap(session.orderedEntries.first)
-        XCTAssertEqual(vm.lastText(for: entry, index: 0), "Last: 80×8")
-        XCTAssertEqual(vm.lastText(for: entry, index: 1), "Last: 80×7")
-        XCTAssertNil(vm.lastText(for: entry, index: 2))
+        XCTAssertEqual(vm.lastSessionSets(for: entry).map(\.reps), [8, 7], "most recent earlier session, in order")
 
         vm.openAddSet(for: entry)
         XCTAssertEqual(vm.entryRequest?.initial, SetValues(weight: 80, reps: 7), "history fallback")

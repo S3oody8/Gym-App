@@ -14,6 +14,7 @@ final class SessionEditorViewModel {
     let restTimer: RestTimerStore
     private let health: WorkoutHealthExporting
     private let healthEnabled: () -> Bool
+    private let quickButtonValues: () -> [Int]
 
     /// Last undoable action, shown in the toast while non-nil.
     private(set) var undoAction: WorkoutUndoAction?
@@ -41,8 +42,10 @@ final class SessionEditorViewModel {
         settings: @escaping () -> RestAlertSettings = { RestAlertSettings.current() },
         restTimer: RestTimerStore? = nil,
         health: WorkoutHealthExporting? = nil,
-        healthEnabled: @escaping () -> Bool = { HealthSync.isEnabled }
+        healthEnabled: @escaping () -> Bool = { HealthSync.isEnabled },
+        quickButtons: @escaping () -> [Int] = { QuickButtons.current() }
     ) {
+        self.quickButtonValues = quickButtons
         self.health = health ?? HealthSync.shared
         self.healthEnabled = healthEnabled
         self.session = session
@@ -90,11 +93,15 @@ final class SessionEditorViewModel {
         return sets
     }
 
-    /// "Last: 80×8" text for the set at `index`, or nil.
-    func lastText(for entry: SessionExercise, index: Int) -> String? {
-        SetPlanner.matchingLast(index: index, in: lastSessionSets(for: entry))
-            .map { "Last: " + WeightFormatter.compact(weight: $0.weight, reps: $0.reps) }
+    /// The current exercise: the one with the most recent set (live workout only).
+    func isCurrent(_ entry: SessionExercise) -> Bool {
+        guard isLive, let latest = lastSetAt else { return false }
+        let currentID = session.entries.first { $0.sets.contains { $0.loggedAt == latest } }?.id
+        return entry.id == currentID
     }
+
+    /// The "Repeat" quick buttons from Settings (e.g. [1, 2, 3]).
+    var quickButtons: [Int] { quickButtonValues() }
 
     /// PR badges for this entry's sets, computed from the exercise's whole history so edits
     /// anywhere are reflected immediately.

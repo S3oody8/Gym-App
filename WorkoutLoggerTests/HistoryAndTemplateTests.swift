@@ -134,15 +134,15 @@ final class HistoryAndTemplateTests: XCTestCase {
         XCTAssertFalse(session.isActive, "stays finished")
     }
 
-    func testLastTextComparesWithSessionBeforeThePastOne() throws {
+    func testPreviousSessionLookupUsesSessionBeforeThePastOne() throws {
         let older = try makePastSession(start: t0)
         let newer = try makePastSession(start: t0.addingTimeInterval(7 * 86_400))
         older.orderedEntries[1].orderedSets[0].weight = 75
         try context.save()
         let vm = SessionEditorViewModel(session: newer, context: context, restAlerts: FakeRestAlerts())
-        XCTAssertEqual(vm.lastText(for: newer.orderedEntries[1], index: 0), "Last: 75×8")
+        XCTAssertEqual(vm.lastSessionSets(for: newer.orderedEntries[1]).first, SetValues(weight: 75, reps: 8, rir: 1))
         let olderVM = SessionEditorViewModel(session: older, context: context, restAlerts: FakeRestAlerts())
-        XCTAssertNil(olderVM.lastText(for: older.orderedEntries[1], index: 0))
+        XCTAssertTrue(olderVM.lastSessionSets(for: older.orderedEntries[1]).isEmpty)
     }
 
     // MARK: Deleting sessions
