@@ -11,25 +11,39 @@ struct DataSettingsSection: View {
 
     var body: some View {
         Section {
-            Button("Export backup (JSON)", systemImage: "square.and.arrow.up") {
-                viewModel.exportJSON(context: context)
+            Menu {
+                Button {
+                    viewModel.exportJSON(context: context)
+                } label: {
+                    Text("Backup (JSON)")
+                    Text("Everything, to restore later")
+                }
+                Button {
+                    viewModel.exportCSV(context: context)
+                } label: {
+                    Text("Spreadsheet (CSV)")
+                    Text("All sets, opens in Excel")
+                }
+            } label: {
+                Label("Export", systemImage: "square.and.arrow.up")
             }
-            Button("Export to CSV", systemImage: "tablecells") {
-                viewModel.exportCSV(context: context)
-            }
-            Button("Import backup (JSON)", systemImage: "square.and.arrow.down") {
-                viewModel.importingShrug = false
-                viewModel.isImportingJSON = true
-            }
-            Button("Import from Shrug (CSV)", systemImage: "arrow.down.doc") {
-                viewModel.importingShrug = true
-                viewModel.isImportingJSON = true
+            Menu {
+                Button("Backup (JSON)") {
+                    viewModel.importingShrug = false
+                    viewModel.isImportingJSON = true
+                }
+                Button("Workout CSV") {
+                    viewModel.importingShrug = true
+                    viewModel.isImportingJSON = true
+                }
+            } label: {
+                Label("Import", systemImage: "square.and.arrow.down")
             }
             Toggle("Weekly backup reminder", isOn: $reminderEnabled)
         } header: {
             Text("Data")
         } footer: {
-            Text("Backups include every exercise, workout and template. Importing a backup only adds what isn't already here; nothing is overwritten. The reminder comes on Sundays at 19:00.")
+            Text("Import takes a backup (JSON) or a workout CSV.")
         }
         .onChange(of: reminderEnabled) { _, enabled in
             if enabled { RestAlertNotifier.shared.requestAuthorization() }

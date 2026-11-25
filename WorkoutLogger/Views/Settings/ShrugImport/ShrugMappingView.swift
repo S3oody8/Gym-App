@@ -17,7 +17,7 @@ struct ShrugMappingView: View {
                 Text("\(viewModel.workoutCount) workouts · \(viewModel.importableSetCount.formatted()) sets · \(viewModel.exercises.count) exercises")
                     .font(.subheadline.weight(.semibold))
             } footer: {
-                Text("All sets import as Working sets with no RIR. Workouts have no names in Shrug; rename them later in History. Importing again adds nothing.")
+                Text("All sets import as Working sets with no RIR. Imported workouts have no names; rename them later in Workouts. Importing again adds nothing.")
             }
 
             if !viewModel.poundExercises.isEmpty {
@@ -28,7 +28,7 @@ struct ShrugMappingView: View {
                 } header: {
                     Text("Exercises with lb rows (\(viewModel.poundExercises.count))")
                 } footer: {
-                    Text("Convert multiplies by 0.4536 and rounds to 0.1 kg. Choose “Already kg” if Shrug labelled kg weights as lb.")
+                    Text("Convert multiplies by 0.4536 and rounds to 0.1 kg. Choose “Already kg” if the file labelled kg weights as lb.")
                 }
             }
 
@@ -48,7 +48,7 @@ struct ShrugMappingView: View {
         }
         .listSectionSpacing(.compact)
         .environment(\.defaultMinListRowHeight, 34)
-        .searchable(text: $viewModel.searchText, prompt: "Search Shrug exercises")
+        .searchable(text: $viewModel.searchText, prompt: "Search imported exercises")
         .safeAreaInset(edge: .bottom) {
             Button(action: onImport) {
                 Text("Import \(viewModel.workoutCount) Workouts")

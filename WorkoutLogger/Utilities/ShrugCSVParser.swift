@@ -10,7 +10,7 @@ enum ShrugCSVParser {
 
         var errorDescription: String? {
             switch self {
-            case .missingColumns(let names): "This doesn't look like a Shrug export (missing: \(names.joined(separator: ", ")))."
+            case .missingColumns(let names): "This doesn't look like a supported workout CSV (missing: \(names.joined(separator: ", ")))."
             case .empty: "The file is empty."
             }
         }

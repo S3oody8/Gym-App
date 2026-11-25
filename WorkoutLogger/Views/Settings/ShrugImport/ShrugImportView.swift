@@ -26,7 +26,7 @@ struct ShrugImportView: View {
                                            description: Text(message))
                 }
             }
-            .navigationTitle("Import from Shrug")
+            .navigationTitle("Import workout CSV")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
