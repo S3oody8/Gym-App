@@ -11,6 +11,7 @@
 		05448EF5247B300AF65CC7B6 /* ProgressRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F8B52B08D09EB3904A3845 /* ProgressRoute.swift */; };
 		067B44AC2AFD9FF8939A9075 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F939383938CFF122C1B87FCF /* HistoryViewModel.swift */; };
 		068E4B36B3EB4342ECC6D396 /* TemplatePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FC1FAA7239F9EEC55444E8F /* TemplatePickerView.swift */; };
+		06ED4B736A44640D76D75756 /* FinishTimeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 995EC211200115915D02990C /* FinishTimeTests.swift */; };
 		0D303F2B08E1F1A84214D63A /* NumericKeypadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54791D5B6A71DFE6940796CA /* NumericKeypadView.swift */; };
 		0E0B728B3DF1507DF33FE1AE /* SetEntryFieldBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB8B1F82D2233EF70526692 /* SetEntryFieldBox.swift */; };
 		111954A92C97D6E81647D6D5 /* HistoryTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E7475E643C2B8BBA2B3824 /* HistoryTabView.swift */; };
@@ -228,6 +229,7 @@
 		880E5FD532A153A018A02927 /* WorkoutStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutStore.swift; sourceTree = "<group>"; };
 		89B75CDD4655827EE73644F6 /* WorkoutTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTabView.swift; sourceTree = "<group>"; };
 		8F2B6F7189485437B4B60CD6 /* JSONBackupDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONBackupDocument.swift; sourceTree = "<group>"; };
+		995EC211200115915D02990C /* FinishTimeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishTimeTests.swift; sourceTree = "<group>"; };
 		9DF5FD3F42454344AA09C2ED /* ProgressTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTests.swift; sourceTree = "<group>"; };
 		9EC4CCBCC26356F014B57472 /* ExerciseProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseProgressView.swift; sourceTree = "<group>"; };
 		A0F1639E1323D74CA52E31D9 /* Equipment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Equipment.swift; sourceTree = "<group>"; };
@@ -333,6 +335,7 @@
 				811186FC2773F018188FDECD /* ExerciseLibraryTests.swift */,
 				CFB513EFAE9F3BCF9F81F45C /* ExerciseSearchTests.swift */,
 				EE14BDEBF14110EC7EDBC60F /* FakeRestAlerts.swift */,
+				995EC211200115915D02990C /* FinishTimeTests.swift */,
 				233E5448746890A93A8B93DE /* HealthTests.swift */,
 				AD70C9B095159BE35ACC8A6D /* HistoryAndTemplateTests.swift */,
 				5097866D9CD15CC8510ECBC8 /* ModelSchemaTests.swift */,
@@ -619,7 +622,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 				};
 			};
@@ -673,6 +676,7 @@
 				7240B36C3B88F04C43F4C4FB /* ExerciseLibraryTests.swift in Sources */,
 				F1A6FECF102CA9C0E50B40CD /* ExerciseSearchTests.swift in Sources */,
 				7DE8607A6F417FE2F0896D3B /* FakeRestAlerts.swift in Sources */,
+				06ED4B736A44640D76D75756 /* FinishTimeTests.swift in Sources */,
 				89FDC44CC64EFC6128D41C89 /* HealthTests.swift in Sources */,
 				4C2D033E40E86C332997212B /* HistoryAndTemplateTests.swift in Sources */,
 				5ED5CDEF10D6A203AFDEBFA6 /* ModelSchemaTests.swift in Sources */,

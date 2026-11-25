@@ -35,8 +35,9 @@ struct WorkoutStore {
         try save()
     }
 
-    func finish(_ session: WorkoutSession, at date: Date = .now) throws {
-        session.finishedAt = date
+    /// Finishes the session at the time of its last logged set (`now` if it has no sets).
+    func finish(_ session: WorkoutSession, now: Date = .now) throws {
+        session.finishedAt = SessionMetrics.finishTime(setTimes: session.allSets.map(\.loggedAt), now: now)
         try save()
     }
 

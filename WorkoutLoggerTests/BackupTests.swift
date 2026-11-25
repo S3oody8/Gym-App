@@ -23,12 +23,12 @@ final class BackupTests: XCTestCase {
         try store.addSet(SetValues(weight: 60, reps: 12, type: .drop), to: e1, at: t0.addingTimeInterval(240))
         let e2 = try store.addEntry(old, to: s1)
         try store.addSet(SetValues(weight: 50, reps: 10), to: e2, at: t0.addingTimeInterval(600))
-        try store.finish(s1, at: t0.addingTimeInterval(900))
+        try store.finish(s1)
 
         let s2 = try store.startSession(at: t0.addingTimeInterval(86_400))
         let e3 = try store.addEntry(row, to: s2)
         try store.addSet(SetValues(weight: 65, reps: 10), to: e3, at: t0.addingTimeInterval(86_460))
-        try store.finish(s2, at: t0.addingTimeInterval(87_000))
+        try store.finish(s2)
 
         try store.saveTemplate(from: s1, name: "Anterior")
         let live = try store.startSession(at: t0.addingTimeInterval(2 * 86_400))

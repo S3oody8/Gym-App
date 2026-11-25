@@ -41,7 +41,7 @@ final class HistoryAndTemplateTests: XCTestCase {
         try store.addSet(SetValues(weight: 60, reps: 10), to: rowEntry, at: start.addingTimeInterval(60))
         try store.addSet(SetValues(weight: 60, reps: 9), to: rowEntry, at: start.addingTimeInterval(300))
         try store.addSet(SetValues(weight: 80, reps: 8, rir: 1), to: benchEntry, at: start.addingTimeInterval(1260))
-        try store.finish(session, at: start.addingTimeInterval(1500))
+        try store.finish(session)
         return session
     }
 
@@ -97,7 +97,7 @@ final class HistoryAndTemplateTests: XCTestCase {
         let newStart = t0.addingTimeInterval(-3 * 86_400 + 1800)
         vm.moveStart(to: newStart)
         XCTAssertEqual(session.startedAt, newStart)
-        XCTAssertEqual(session.finishedAt, newStart.addingTimeInterval(1500))
+        XCTAssertEqual(session.finishedAt, newStart.addingTimeInterval(1260), "finish = last set")
         XCTAssertEqual(session.allSets.map(\.loggedAt).min(), newStart.addingTimeInterval(60))
         XCTAssertEqual(session.duration, 1200)
 
@@ -167,7 +167,7 @@ final class HistoryAndTemplateTests: XCTestCase {
         XCTAssertEqual(restored.orderedEntries.map { $0.exercise?.name }, ["Row", "Bench"])
         XCTAssertEqual(restored.orderedEntries[0].orderedSets.map(\.reps), [10, 9])
         XCTAssertEqual(restored.orderedEntries[1].orderedSets.first?.rir, 1)
-        XCTAssertEqual(restored.finishedAt, t0.addingTimeInterval(1500))
+        XCTAssertEqual(restored.finishedAt, t0.addingTimeInterval(1260), "finish = last set")
         XCTAssertEqual(restored.duration, 1200)
         XCTAssertEqual(try freshCount(WorkoutSet.self), 3)
     }

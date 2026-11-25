@@ -8,6 +8,11 @@ enum SessionMetrics {
             .reduce(0) { $0 + $1.weight * Double($1.reps) }
     }
 
+    /// Finish time of a session: the time of the last logged set, or `now` if there are no sets.
+    static func finishTime(setTimes: [Date], now: Date) -> Date {
+        setTimes.max() ?? now
+    }
+
     /// "Load 4,820 kg" (rounded to whole kg).
     static func loadText(_ kg: Double) -> String {
         let style = IntegerFormatStyle<Int>.number.grouping(.automatic).locale(Locale(identifier: "en_US"))
