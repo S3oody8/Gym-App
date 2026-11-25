@@ -13,7 +13,7 @@ if [[ "$MODE" == build || "$MODE" == all ]]; then
   echo "BUILD OK"
 fi
 if [[ "$MODE" == test || "$MODE" == all ]]; then
-  xcodebuild -project WorkoutLogger.xcodeproj -scheme WorkoutLogger -destination "$DEST" test 2>&1 \
-    | grep -E "error:|warning:|failed \(|Executed [0-9]+ tests.*seconds$|TEST (SUCCEEDED|FAILED)" | grep -v appintents | sort -u | tail -4
+  xcodebuild -project WorkoutLogger.xcodeproj -scheme WorkoutLogger -destination "$DEST" -test-timeouts-enabled YES -maximum-test-execution-time-allowance 120 test 2>&1 \
+    | grep -E "error:|warning:|failed \(|Executed [0-9]+ tests.*seconds$|TEST (SUCCEEDED|FAILED)" | grep -v appintents | tail -3
   xcrun simctl shutdown all
 fi

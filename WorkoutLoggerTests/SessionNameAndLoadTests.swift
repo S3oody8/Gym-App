@@ -80,6 +80,33 @@ final class SessionNameTests: XCTestCase {
         XCTAssertFalse(vm.needsNameBeforeFinish)
     }
 
+    func testTypingSavesOnlyAfterPause() async throws {
+        let session = try store.startSession()
+        let vm = SessionEditorViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
+        vm.editName("A")
+        vm.editName("An")
+        vm.editName("Anterior")
+        XCTAssertEqual(vm.nameDraft, "Anterior")
+        XCTAssertEqual(session.name, "", "not saved on every keystroke")
+        XCTAssertFalse(vm.needsNameBeforeFinish, "Finish sees the typed name")
+        try await Task.sleep(for: .milliseconds(800))
+        XCTAssertEqual(try persistedSession()?.name, "Anterior")
+    }
+
+    func testCommitAndFinishFlushPendingName() throws {
+        let session = try store.startSession()
+        let vm = SessionEditorViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
+        vm.editName("Posterior")
+        vm.commitName()
+        XCTAssertEqual(try persistedSession()?.name, "Posterior", "Return / leaving saves at once")
+
+        vm.addExercise(bench)
+        vm.quickAdd(to: session.orderedEntries[0], minus: 1)
+        vm.editName("Pull")
+        vm.finish()
+        XCTAssertEqual(try persistedSession()?.name, "Pull", "Finish saves a pending edit")
+    }
+
     func testFinishWithNameOrSkip() throws {
         let named = try store.startSession()
         let vm = SessionEditorViewModel(session: named, context: context, restAlerts: FakeRestAlerts())

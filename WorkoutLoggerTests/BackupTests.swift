@@ -30,7 +30,8 @@ final class BackupTests: XCTestCase {
         try store.addSet(SetValues(weight: 65, reps: 10), to: e3, at: t0.addingTimeInterval(86_460))
         try store.finish(s2)
 
-        try store.saveTemplate(from: s1, name: "Anterior")
+        // Fixed date: backups keep milliseconds, so a sub-ms "now" could round differently.
+        try store.saveTemplate(from: s1, name: "Anterior").createdAt = t0
         let live = try store.startSession(at: t0.addingTimeInterval(2 * 86_400))
         try store.addEntry(row, to: live)
         return container

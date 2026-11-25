@@ -24,9 +24,15 @@ final class SessionEditorViewModel {
     /// Non-nil while the set pop-up is open.
     var entryRequest: SetEntryRequest?
 
+    /// The workout name as typed. Saved `nameSaveDelay` after the last keystroke, on Return,
+    /// when leaving the screen and before Finish, not on every keystroke (SPEC §2).
+    private(set) var nameDraft: String
+
     private var lastSessionCache: [UUID: [SetValues]] = [:]
     private var toastTask: Task<Void, Never>?
+    private var nameSaveTask: Task<Void, Never>?
     static let toastDuration: Duration = .seconds(5)
+    static let nameSaveDelay: Duration = .milliseconds(500)
 
     init(
         session: WorkoutSession,
@@ -39,6 +45,7 @@ final class SessionEditorViewModel {
         self.health = health ?? HealthSync.shared
         self.healthEnabled = healthEnabled
         self.session = session
+        self.nameDraft = session.name
         self.store = WorkoutStore(context: context)
         self.restAlerts = restAlerts ?? RestAlertNotifier.shared
         self.settings = settings
@@ -260,12 +267,13 @@ final class SessionEditorViewModel {
 
     /// True when Finish should first ask for a name.
     var needsNameBeforeFinish: Bool {
-        session.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        nameDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     /// Finishes the workout, optionally naming it first (nil = keep the current name / Skip).
     func finish(naming name: String? = nil) {
         restAlerts.cancel()
+        commitName()
         perform {
             if let name { try store.rename(session, to: name.trimmingCharacters(in: .whitespacesAndNewlines)) }
             try store.finish(session)
@@ -282,8 +290,28 @@ final class SessionEditorViewModel {
 
     /// Saves the workout name as typed (trimmed only for display / on Finish). Not part of undo.
     func rename(to name: String) {
+        nameSaveTask?.cancel()
+        nameDraft = name
         guard name != session.name else { return }
         perform { try store.rename(session, to: name) }
+    }
+
+    /// Called on every keystroke: keeps the text and saves it once typing pauses.
+    func editName(_ text: String) {
+        nameDraft = text
+        nameSaveTask?.cancel()
+        nameSaveTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.nameSaveDelay)
+            guard !Task.isCancelled else { return }
+            self?.commitName()
+        }
+    }
+
+    /// Saves a pending name edit now (Return, leaving the screen, Finish).
+    func commitName() {
+        nameSaveTask?.cancel()
+        nameSaveTask = nil
+        rename(to: nameDraft)
     }
 
     func discard() {
