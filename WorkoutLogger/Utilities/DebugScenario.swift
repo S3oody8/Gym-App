@@ -63,15 +63,18 @@ enum DebugScenario: String {
 
     var initialTab: AppTab {
         switch self {
-        case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert: .workout
+        case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert: .workouts
         case .settings: .settings
-        case .history, .historyDetail, .historyDeleteFromDetail: .history
-        case .templatePicker: .workout
+        case .history, .historyDetail, .historyDeleteFromDetail, .templatePicker, .shrugHistory: .workouts
         case .progress: .progress
         case .exerciseProgress: .exercises
         case .shrugMapping, .shrugProgress, .shrugSummary: .settings
-        case .shrugHistory: .history
         case .exercises, .exerciseEditor: .exercises
         }
+    }
+
+    /// Scenarios that start with the live workout open full screen.
+    var opensWorkout: Bool {
+        [.workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert].contains(self)
     }
 }

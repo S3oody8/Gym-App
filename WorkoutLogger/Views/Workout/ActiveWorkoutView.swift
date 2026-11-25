@@ -12,8 +12,11 @@ struct ActiveWorkoutView: View {
     @State private var askName = false
     @State private var finishName = ""
 
-    init(session: WorkoutSession, context: ModelContext) {
+    let onMinimise: () -> Void
+
+    init(session: WorkoutSession, context: ModelContext, onMinimise: @escaping () -> Void) {
         _viewModel = State(initialValue: SessionEditorViewModel(session: session, context: context))
+        self.onMinimise = onMinimise
     }
 
     private var session: WorkoutSession { viewModel.session }
@@ -44,6 +47,9 @@ struct ActiveWorkoutView: View {
             bottomBar
         }
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Minimise", systemImage: "chevron.down", action: onMinimise)
+            }
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button("Save as Template", systemImage: "square.and.arrow.down") {
