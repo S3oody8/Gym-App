@@ -56,7 +56,7 @@ final class CurrentExerciseTests: XCTestCase {
         XCTAssertFalse(vm.isCurrent(b) || vm.isCurrent(r), "no sets yet: no current exercise")
 
         vm.submit(SetValues(weight: 80, reps: 8),
-                  for: SetEntryRequest(entryID: b.id, setID: nil, exerciseName: "Bench", initial: nil, increment: 2.5))
+                  for: SetEntryRequest(entryID: b.id, setID: nil, exerciseName: "Bench", initial: nil))
         XCTAssertTrue(vm.isCurrent(b))
         try WorkoutStore(context: context).addSet(SetValues(weight: 60, reps: 10), to: r, at: .now.addingTimeInterval(1))
         XCTAssertTrue(vm.isCurrent(r))

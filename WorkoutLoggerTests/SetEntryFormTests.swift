@@ -63,15 +63,46 @@ final class SetEntryFormTests: XCTestCase {
         XCTAssertNotNil(form.values, "RIR is optional")
     }
 
-    func testStepWeight() {
-        var form = SetEntryForm(initial: SetValues(weight: 80, reps: 8))
-        form.stepWeight(by: 2.5, up: true)
-        XCTAssertEqual(form.weightText, "82.5")
-        form.stepWeight(by: 100, up: false)
-        XCTAssertEqual(form.weight, 0)
+    func testPrefillShowsWeightAndRepsHintOnly() {
+        var form = SetEntryForm(prefill: SetPrefill(weight: 80, repsHint: 10, field: .reps))
+        XCTAssertEqual(form.weightText, "80")
+        XCTAssertEqual(form.repsText, "", "reps are not filled in")
+        XCTAssertEqual(form.repsHint, 10)
+        XCTAssertEqual(form.field, .reps)
+        XCTAssertNil(form.values, "Save stays disabled until reps are typed")
+        type([.digit(9)], into: &form)
+        XCTAssertEqual(form.values, SetValues(weight: 80, reps: 9))
+
+        let empty = SetEntryForm(prefill: SetPrefill(weight: nil, repsHint: nil, field: .weight))
+        XCTAssertEqual(empty.weightText, "")
+        XCTAssertEqual(empty.field, .weight)
+    }
+
+    func testDoubleSavesTotalAndTypingClearsIt() {
+        var form = SetEntryForm(prefill: SetPrefill(weight: 22.5, repsHint: nil, field: .reps))
+        form.toggleDouble()
+        XCTAssertTrue(form.isDoubled)
+        XCTAssertEqual(form.weightText, "45")
+        type([.digit(8)], into: &form)
+        XCTAssertTrue(form.isDoubled, "typing reps keeps it")
+        XCTAssertEqual(form.values?.weight, 45, "the doubled total is saved")
+
+        form.select(.weight)
+        type([.digit(5), .digit(0)], into: &form)
+        XCTAssertFalse(form.isDoubled, "typing in Weight clears it")
+        XCTAssertEqual(form.weight, 50)
+    }
+
+    func testDoubleTwiceRestoresPerSideAndEmptyDoesNothing() {
+        var form = SetEntryForm(prefill: SetPrefill(weight: 12.5, repsHint: nil, field: .reps))
+        form.toggleDouble()
+        form.toggleDouble()
+        XCTAssertFalse(form.isDoubled)
+        XCTAssertEqual(form.weightText, "12.5")
         var empty = SetEntryForm()
-        empty.stepWeight(by: 5, up: true)
-        XCTAssertEqual(empty.weight, 5)
+        empty.toggleDouble()
+        XCTAssertFalse(empty.isDoubled)
+        XCTAssertEqual(empty.weightText, "")
     }
 
     func testEditKeepsTypeAndRIR() {

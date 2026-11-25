@@ -69,9 +69,10 @@ final class HistoryAndTemplateTests: XCTestCase {
 
         let vm = SessionEditorViewModel(session: session, context: context, restAlerts: FakeRestAlerts())
         vm.openAddSet(for: session.orderedEntries[0])
-        XCTAssertEqual(vm.entryRequest?.initial, SetValues(weight: 60, reps: 9), "last logged set in history")
+        XCTAssertEqual(vm.entryRequest?.prefill, SetPrefill(weight: 60, repsHint: 10, field: .reps),
+                       "set 1 of the last session: weight filled, reps as a hint")
         vm.openAddSet(for: session.orderedEntries[1])
-        XCTAssertEqual(vm.entryRequest?.initial, SetValues(weight: 80, reps: 8), "RIR not carried over")
+        XCTAssertEqual(vm.entryRequest?.prefill, SetPrefill(weight: 80, repsHint: 8, field: .reps))
     }
 
     func testSaveTemplateFromViewModelCanBeUndone() throws {
@@ -128,7 +129,7 @@ final class HistoryAndTemplateTests: XCTestCase {
 
         let set = benchEntry.orderedSets[0]
         vm.submit(SetValues(weight: 85, reps: 6), for: SetEntryRequest(
-            entryID: benchEntry.id, setID: set.id, exerciseName: "Bench", initial: set.values, increment: 2.5))
+            entryID: benchEntry.id, setID: set.id, exerciseName: "Bench", initial: set.values))
         XCTAssertEqual(set.values, SetValues(weight: 85, reps: 6))
         XCTAssertTrue(fake.scheduled.isEmpty && fake.cancelCount == 0, "no rest alerts for past sessions")
         XCTAssertFalse(session.isActive, "stays finished")

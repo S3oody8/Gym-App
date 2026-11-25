@@ -37,7 +37,8 @@ struct NumericKeypadView: View {
             }
             .font(.title.weight(.medium))
             .frame(maxWidth: .infinity, minHeight: 58)
-            .background(Color(.tertiarySystemFill), in: RoundedRectangle(cornerRadius: 12))
+            .foregroundStyle(Theme.text)
+            .background(Theme.raised, in: RoundedRectangle(cornerRadius: 12))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

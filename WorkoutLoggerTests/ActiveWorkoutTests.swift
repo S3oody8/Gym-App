@@ -120,7 +120,7 @@ final class ActiveWorkoutTests: XCTestCase {
         let recentEntry = SessionExercise(order: 0, exercise: bench)
         recent.entries.append(recentEntry)
         recentEntry.sets.append(contentsOf: [WorkoutSet(order: 0, weight: 80, reps: 8),
-                                             WorkoutSet(order: 1, weight: 80, reps: 7)])
+                                             WorkoutSet(order: 1, weight: 82.5, reps: 7)])
         try context.save()
 
         let session = try store.startSession()
@@ -130,11 +130,13 @@ final class ActiveWorkoutTests: XCTestCase {
         XCTAssertEqual(vm.lastSessionSets(for: entry).map(\.reps), [8, 7], "most recent earlier session, in order")
 
         vm.openAddSet(for: entry)
-        XCTAssertEqual(vm.entryRequest?.initial, SetValues(weight: 80, reps: 7), "history fallback")
-        XCTAssertEqual(vm.entryRequest?.increment, 2.5)
+        XCTAssertEqual(vm.entryRequest?.prefill, SetPrefill(weight: 80, repsHint: 8, field: .reps),
+                       "first set: set 1 of the most recent earlier session, reps only as a hint")
+        XCTAssertNil(vm.entryRequest?.initial)
         vm.submit(SetValues(weight: 85, reps: 5), for: try XCTUnwrap(vm.entryRequest))
         vm.openAddSet(for: entry)
-        XCTAssertEqual(vm.entryRequest?.initial, SetValues(weight: 85, reps: 5), "this session first")
+        XCTAssertEqual(vm.entryRequest?.prefill, SetPrefill(weight: 85, repsHint: nil, field: .reps),
+                       "later sets: previous set's weight, reps empty")
     }
 
     func testDiscardEmptyWorkout() throws {
@@ -155,6 +157,6 @@ final class ActiveWorkoutTests: XCTestCase {
 
     private func request(_ entry: SessionExercise, editing set: WorkoutSet? = nil) -> SetEntryRequest {
         SetEntryRequest(entryID: entry.id, setID: set?.id, exerciseName: "Bench",
-                        initial: set?.values, increment: 2.5)
+                        initial: set?.values)
     }
 }

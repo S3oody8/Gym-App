@@ -71,7 +71,7 @@ final class RestAlertSchedulingTests: XCTestCase {
     private func addSet() {
         vm.submit(SetValues(weight: 80, reps: 8),
                   for: SetEntryRequest(entryID: entry.id, setID: nil, exerciseName: "Bench",
-                                       initial: nil, increment: 2.5))
+                                       initial: nil))
     }
 
     func testEachSetSchedulesOneAlertFromItsLogTime() throws {
@@ -92,7 +92,7 @@ final class RestAlertSchedulingTests: XCTestCase {
         let set = try XCTUnwrap(entry.orderedSets.first)
         vm.submit(SetValues(weight: 85, reps: 8),
                   for: SetEntryRequest(entryID: entry.id, setID: set.id, exerciseName: "Bench",
-                                       initial: set.values, increment: 2.5))
+                                       initial: set.values))
         XCTAssertEqual(fake.scheduled.count, 1, "editing a set doesn't reschedule")
         vm.quickAdd(to: entry, minus: 1)
         XCTAssertEqual(fake.scheduled.last?.seconds, 60)

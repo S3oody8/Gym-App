@@ -84,7 +84,8 @@ final class SessionEditorViewModel {
 
     // MARK: Lookups
 
-    /// Sets from the previous session containing this entry's exercise (cached per workout).
+    /// Sets of the most recent earlier session containing this entry's exercise, in order
+    /// (cached per workout).
     func lastSessionSets(for entry: SessionExercise) -> [SetValues] {
         guard let exercise = entry.exercise else { return [] }
         if let cached = lastSessionCache[exercise.id] { return cached }
@@ -150,15 +151,15 @@ final class SessionEditorViewModel {
     }
 
     func openAddSet(for entry: SessionExercise) {
-        let initial = SetPlanner.prefill(
+        let prefill = SetPlanner.prefill(
             sessionSets: entry.orderedSets.map(\.values),
-            historySets: lastSessionSets(for: entry)
+            previousSessionSets: lastSessionSets(for: entry)
         )
         entryRequest = SetEntryRequest(
             entryID: entry.id, setID: nil,
             exerciseName: entry.exercise?.name ?? "Exercise",
-            initial: initial,
-            increment: entry.exercise?.weightIncrement ?? 2.5
+            initial: nil,
+            prefill: prefill
         )
     }
 
@@ -166,8 +167,7 @@ final class SessionEditorViewModel {
         entryRequest = SetEntryRequest(
             entryID: entry.id, setID: set.id,
             exerciseName: entry.exercise?.name ?? "Exercise",
-            initial: set.values,
-            increment: entry.exercise?.weightIncrement ?? 2.5
+            initial: set.values
         )
     }
 

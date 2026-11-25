@@ -1,11 +1,17 @@
 import Foundation
 
-/// State of the set pop-up (weight / reps / RIR typed on the custom keypad). Pure, no UI.
+/// State of the set pad (weight / reps / RIR typed on the custom keypad, ×2). Pure, no UI.
 struct SetEntryForm: Equatable, Sendable {
     var weightText: String = ""
     var repsText: String = ""
     var rirText: String = ""
     var type: SetType = .working
+    /// Grey hint shown while Reps is empty (last session's set 1 reps). Never saved.
+    private(set) var repsHint: Int?
+    /// True after ×2: the weight field holds the doubled total. Typing in Weight clears it.
+    private(set) var isDoubled = false
+    /// Weight text before ×2, so a second tap can undo it.
+    private var weightBeforeDouble: String?
     private(set) var field: SetEntryField = .weight
     /// When true, the next digit replaces the field's text (calculator-style after pre-fill / selecting).
     private(set) var replaceOnNextInput = true
@@ -25,12 +31,35 @@ struct SetEntryForm: Equatable, Sendable {
         self.field = field ?? (initial == nil ? .weight : .reps)
     }
 
+    /// Adding a set: the prefilled weight (if any), empty reps with an optional grey hint.
+    init(prefill: SetPrefill) {
+        weightText = prefill.weight.map(WeightFormatter.string) ?? ""
+        repsHint = prefill.repsHint
+        field = prefill.field
+    }
+
+    /// ×2: doubles the weight field (rounded to 0.01) so the total is saved. Tapping again
+    /// while doubled restores the per-side value.
+    mutating func toggleDouble() {
+        if isDoubled, let before = weightBeforeDouble {
+            weightText = before
+            isDoubled = false
+            weightBeforeDouble = nil
+        } else if let weight, weight > 0 {
+            weightBeforeDouble = weightText
+            weightText = WeightFormatter.string(SetPlanner.doubled(weight))
+            isDoubled = true
+        }
+        if field == .weight { replaceOnNextInput = true }
+    }
+
     mutating func select(_ newField: SetEntryField) {
         field = newField
         replaceOnNextInput = true
     }
 
     mutating func press(_ key: KeypadKey) {
+        if field == .weight { clearDoubled() }
         switch key {
         case .digit(let d): typeDigit(d)
         case .decimal: typeDecimal()
@@ -38,10 +67,9 @@ struct SetEntryForm: Equatable, Sendable {
         }
     }
 
-    mutating func stepWeight(by increment: Double, up: Bool) {
-        let current = weight ?? 0
-        weightText = WeightFormatter.string(SetPlanner.step(weight: current, by: increment, up: up))
-        if field == .weight { replaceOnNextInput = true }
+    private mutating func clearDoubled() {
+        isDoubled = false
+        weightBeforeDouble = nil
     }
 
     // MARK: Parsed values

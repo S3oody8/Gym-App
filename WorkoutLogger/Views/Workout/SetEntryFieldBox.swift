@@ -16,15 +16,15 @@ struct SetEntryFieldBox: View {
                     .foregroundStyle(.secondary)
                 Text(text.isEmpty ? placeholder : text)
                     .font(.title.monospacedDigit().weight(.semibold))
-                    .foregroundStyle(text.isEmpty ? .secondary : .primary)
+                    .foregroundStyle(text.isEmpty ? Theme.textFaint : Theme.text)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
             .frame(maxWidth: .infinity, minHeight: 64)
-            .background(Color(.secondarySystemBackground), in: RoundedRectangle(cornerRadius: 12))
+            .background(Theme.surfaceAlt, in: RoundedRectangle(cornerRadius: 12))
             .overlay {
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(isSelected ? Color.accentColor : .clear, lineWidth: 2)
+                    .strokeBorder(isSelected ? Theme.accent : .clear, lineWidth: 2)
             }
         }
         .buttonStyle(.plain)

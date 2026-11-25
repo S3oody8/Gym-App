@@ -119,6 +119,7 @@
 		B021298D0194DA7B91DF2945 /* SetType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FFE73F39EDB4F17A43F034B /* SetType.swift */; };
 		B2C21ECD9DB8FCF284F54483 /* BackupFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2D9B0E7C4D8852157056A7F /* BackupFile.swift */; };
 		B31236EA4B4DB68FB14EF72D /* Exercise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218B3817C4531D59227EF27A /* Exercise.swift */; };
+		B393ADE71B66BA254504423E /* SetPrefill.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFC1AC320F8BCB9150C26EF /* SetPrefill.swift */; };
 		B675340457D2A6F3648EA0C2 /* ExerciseLibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3247B1CF9D6F4C0781A13232 /* ExerciseLibraryViewModel.swift */; };
 		B9FB1A28A3EFB9E5F79E3270 /* HighlightedNameText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660458788186CEB6D425F249 /* HighlightedNameText.swift */; };
 		BC646115CCB5FFDF36253119 /* ModelSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCD7502C7628C3BCE17CCEDE /* ModelSchema.swift */; };
@@ -260,6 +261,7 @@
 		7A30A6D5EC2A42970E605603 /* AppTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTab.swift; sourceTree = "<group>"; };
 		7AB500D7CA4D21261F3CF71C /* WorkoutMiniBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMiniBar.swift; sourceTree = "<group>"; };
 		7CBA56E91CA14E161F075FFE /* DebugScenario.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugScenario.swift; sourceTree = "<group>"; };
+		7CFC1AC320F8BCB9150C26EF /* SetPrefill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetPrefill.swift; sourceTree = "<group>"; };
 		811186FC2773F018188FDECD /* ExerciseLibraryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseLibraryTests.swift; sourceTree = "<group>"; };
 		81B4E63856ADA0C66DF5FC91 /* ExerciseRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExerciseRowView.swift; sourceTree = "<group>"; };
 		83E4065023C9559520F81926 /* ProgressQueries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressQueries.swift; sourceTree = "<group>"; };
@@ -508,6 +510,7 @@
 				0960ECF77178C4971C4896E5 /* SetEntryForm.swift */,
 				F1AF10C94959393E1CEAF3E5 /* SetEntryRequest.swift */,
 				D157B41F3A50F2BF7E3AB916 /* SetPlanner.swift */,
+				7CFC1AC320F8BCB9150C26EF /* SetPrefill.swift */,
 				BA21000950A28A4E73A1B01B /* SetSnapshot.swift */,
 				BF9DF9ED6F6EC40994C3353D /* SettingsKeys.swift */,
 				DAA87A73F6C30ECC4EF6D302 /* SetValues.swift */,
@@ -878,6 +881,7 @@
 				953E8E731D645A6DECA00390 /* SetEntryRequest.swift in Sources */,
 				D07D6D95DD3B3EF40356D248 /* SetEntrySheet.swift in Sources */,
 				D7B961FED59CBFCBE4D61111 /* SetPlanner.swift in Sources */,
+				B393ADE71B66BA254504423E /* SetPrefill.swift in Sources */,
 				924A53A803F1599872DC197C /* SetRowView.swift in Sources */,
 				8DAE28ACC2F993F062D98E74 /* SetSnapshot.swift in Sources */,
 				D8C6D431447A00730D7EC42B /* SetTableColumns.swift in Sources */,
