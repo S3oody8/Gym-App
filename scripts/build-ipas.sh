@@ -7,6 +7,7 @@
 # The widget extension (.appex) is ad-hoc signed before the app; only the full build gives the
 # app the HealthKit entitlement (so Sideloadly can keep it when it re-signs).
 set -euo pipefail
+setopt null_glob
 cd "$(dirname "$0")/.."
 OUT=~/Desktop/ipa
 mkdir -p build "$OUT"
