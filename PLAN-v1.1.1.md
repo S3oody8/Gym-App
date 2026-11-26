@@ -45,25 +45,57 @@ The rules:
 - Update the folder-layout line in CLAUDE.md §5 to match.
 - Do this as its own commit.
 
-Tell the user honestly that this makes the code easier to work in but **does not by itself fix the lag**. F1 fixes the lag.
+This makes the code easier to work in. It doesn't affect speed; F1 handles the lag.
 
-## F1. Lag
+## F1. Lag (do this FIRST, before F0)
 
-The user says the app is "really laggy." These are the likely causes found in the code:
-1. **History tab:** `WorkoutsTabView.body` calls `viewModel.prCounts(exercises:sessions:)`, which recomputes PRs for every exercise across all history on every redraw.
-2. **Live workout:** `ExerciseCardSection` calls `viewModel.prBadges(for:)`, which runs `PRDetector` over the exercise's whole history for every card on every redraw. The 1-second rest timer redraws mean this runs constantly.
-3. **Past workout:** `PastWorkoutView` does the same per entry.
-4. `session.allSets` and `isCurrent` scan every set on each redraw.
+The user's top complaint is that the app is "really laggy". The phone has about 300 imported workouts, so any work that grows with history is felt everywhere. Below are the causes found in the code, ranked by impact. Fix them in this order, measuring as you go.
 
-What to do:
-- Compute PR data once and cache it in the view model. Recompute only when sets change: add, edit, delete, undo, import or restore.
-- Move the history PR counts off the main thread or into a cached result. Never compute them in `body`.
-- Make sure each `TimelineView` wraps only the timer `Text`, so the timer ticking doesn't re-render the rest of the screen.
+### 1. The PR detector is quadratic: `Utilities/PRDetector.swift`
 
-How to check it:
-- Add a debug seed with about 300 workouts, which is the size of the user's imported history. Add a unit/performance test that times the PR and history computations on that data.
-- Report the timings before and after the fix.
-- Then build Release (the IPA is Release) and check that scrolling the history, opening a past workout and logging a set all feel instant in the simulator.
+`badges(for:)` loops over every set, and for each one it rebuilds `earlier.map(\.weight).max()` and `earlier.filter { $0.weight >= w }` over **all earlier sets**. That is O(n²) per exercise. An exercise with 800 sets costs about 640,000 steps, times three passes.
+
+Rewrite it as one pass with running state, keeping exactly the same results:
+- `maxWeight: Double` so far.
+- `maxRepsByWeight: [Double: Int]`, the best reps at each distinct weight. For the reps check, look only at the weights ≥ w. An exercise has few distinct weights, so this is close to O(n).
+- Update the state *after* each set, as the `defer` does now.
+- The existing PR tests must pass unchanged. Add a test that compares the old and new algorithms on about 2,000 random sets, plus a timing test.
+
+### 2. PRs are recalculated during drawing
+
+PRs are recalculated over the whole history inside SwiftUI `body`:
+- `WorkoutsTabView` line ~45 calls `viewModel.prCounts(...)`. That redoes every exercise's PRs on every redraw of the history tab: scrolling, the undo toast, the tab switch.
+- `ExerciseCardSection` line ~13 calls `viewModel.prBadges(for: entry)` for every card on every redraw of the live workout.
+- `PastWorkoutView` line ~69 does the same for each entry.
+
+The fix is to add a `PRCache`. It is a plain `@MainActor @Observable` class, held once by the app and passed through the environment.
+- `badges(for exerciseID) -> [UUID: PRBadges]` is computed lazily and stored.
+- `countsBySession -> [UUID: Int]` is built from the cached per-exercise results and stored.
+- `invalidate(exerciseID:)` runs after add, edit or delete set, undo, remove entry, or delete/restore session (in `WorkoutStore`, or the view models that call it). `invalidateAll()` runs after import, JSON restore and the debug seed.
+- Views only read the cache and never compute PRs in `body`.
+
+### 3. Relationship walking faults objects one at a time
+
+`ProgressQueries.prInputs`, `WorkoutStore.lastSessionSets`, `session.allSets`, `session.load` and `Exercise.lastUsed` walk SwiftData relationships. Each access can fault a single object.
+- When building the cache, fetch the sets in one `FetchDescriptor<WorkoutSet>` with `relationshipKeyPathsForPrefetching` (the entry, the session, the exercise) instead of walking relationships.
+- History rows call `session.allSets.count` and `session.load` on every row draw. Cache a small row summary per session id (sets, volume, duration) in `HistoryViewModel`, and invalidate it with the same events as the PR cache.
+- The Exercises and Progress tabs sort by `lastUsed`. Compute that once in a dictionary, not per comparison.
+
+### 4. Timer redraws
+
+`RestDock`, `RestSheet` and `WorkoutMiniBar` tick every second. Each `TimelineView` must wrap **only** the timer `Text`/ring, and must not read the view model or the session inside the closure. Otherwise the whole workout screen re-renders every second, which is what makes the live workout feel sticky. Use `Self._printChanges()` in a Debug build to confirm the card sections don't re-evaluate on every tick, then remove it.
+
+### 5. Only if still slow after 1 to 4
+
+Build the PR cache on a background `@ModelActor` at launch, and publish the results to the main actor. Do this only if the timings below still miss the targets.
+
+### How to measure (report the numbers)
+- Add a `DebugSeeder` scenario with **300 workouts, about 15 exercises and about 6,000 sets**, spread over 2 years.
+- Add `XCTest` `measure {}` tests on that seed for three things: building the PR cache, building the history PR counts, and computing one exercise's badges.
+- Report the before and after timings in the step summary.
+- **Targets:** a full PR cache build under 150 ms on the simulator. After the cache is warm, nothing PR-related runs during scrolling or timer ticks. Logging a set recomputes only that exercise, in under 10 ms.
+- No model changes are needed. This is all caching and algorithm work.
+- After this step, build the Release IPAs so the user can try the fix on the phone before the other steps.
 
 ## F2. Rest timer: separate it from the sets
 
@@ -124,4 +156,4 @@ The CSV import never read a workout name. The parser only reads Workout Start, E
 ---
 
 ## Order
-F0, F1, F2 + F3 (one step), F4, F5, F6, F7, F8, then release 1.1.1.
+**F1 first** (then give the user the IPAs to test the lag), then F0, F2 + F3 (one step), F4, F5, F6, F7, F8, then release 1.1.1.
