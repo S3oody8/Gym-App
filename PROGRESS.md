@@ -1,6 +1,6 @@
 # PROGRESS
 
-_Last updated: 2026-11-25_
+_Last updated: 2026-11-26_
 
 ## v1.0 (done)
 Steps 1–10 of the original build order: project setup, exercise library, active workout, rest
@@ -24,6 +24,24 @@ IPAs. Release **v1.0**: https://github.com/S3oody8/Gym-App/releases/tag/v1.0
 - C3 Version 1.1, three IPAs, GitHub release ✅ (see "Current state")
 
 Tests: 139 unit tests passing.
+
+## v1.1.1 (PLAN-v1.1.1.md), in progress
+- F1 Lag fix ✅ (done first, as the plan says). Test IPAs are in `~/Desktop/ipa` (version still 1.1 (2)).
+  - The PR detector is now one pass (was O(n²)), checked against the old algorithm on random sets.
+  - A `PRCache` holds PR badges, PR counts, RECENT PRs, last-used dates and history row summaries. It is
+    invalidated by `WorkoutStore`, imports, JSON restore and the seed, and built on a background
+    `@ModelActor` at launch.
+  - Timer `TimelineView`s now wrap only the ticking text and ring.
+  - Timings on the simulator with the `largeHistory` seed (300 workouts, 6,000 sets):
+
+    | | before | after |
+    |---|---|---|
+    | History tab PR counts, paid on every redraw | ~990 ms | 0 after the build (warm reads ~0.01 ms) |
+    | Full cache build, once per launch, background | n/a | ~150–180 ms |
+    | One exercise's badges after logging a set | ~22 ms on every card redraw | ~10–12 ms, once |
+- Next: the user tests the lag on the phone, then F0 (folders), F2 + F3, F4, F5, F6, F7, F8 (ask for CSV lines first), release 1.1.1.
+
+Tests: 150 unit tests passing.
 
 ## Current state
 - Release **v1.1**: https://github.com/S3oody8/Gym-App/releases/tag/v1.1

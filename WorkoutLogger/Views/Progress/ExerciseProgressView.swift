@@ -4,6 +4,7 @@ import SwiftUI
 struct ExerciseProgressView: View {
     @State private var viewModel: ExerciseProgressViewModel
     @State private var editing = false
+    @Environment(PRCache.self) private var prCache
 
     init(exercise: Exercise) {
         _viewModel = State(initialValue: ExerciseProgressViewModel(
@@ -12,7 +13,7 @@ struct ExerciseProgressView: View {
 
     var body: some View {
         let points = viewModel.points()
-        let badges = viewModel.badges
+        let badges = prCache.badges(for: viewModel.exercise.id)
         List {
             Section {
                 Picker("Metric", selection: $viewModel.metric) {

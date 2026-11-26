@@ -22,6 +22,8 @@ enum DebugScenario: String {
     case shrugHistory
     case exercises
     case exerciseEditor
+    /// 300 workouts / 6,000 sets, for checking speed.
+    case largeHistory
 
     static let current: DebugScenario? = {
         #if DEBUG
@@ -65,7 +67,7 @@ enum DebugScenario: String {
         switch self {
         case .workoutEmpty, .workoutMid, .workoutPopup, .workoutDiscard, .workoutRemoveUndo, .restAlert: .workouts
         case .settings: .settings
-        case .history, .historyDetail, .historyDeleteFromDetail, .templatePicker, .shrugHistory: .workouts
+        case .history, .historyDetail, .historyDeleteFromDetail, .templatePicker, .shrugHistory, .largeHistory: .workouts
         case .progress: .progress
         case .exerciseProgress: .exercises
         case .shrugMapping, .shrugProgress, .shrugSummary: .settings

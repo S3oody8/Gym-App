@@ -6,6 +6,7 @@ import SwiftUI
 /// calendar (tap a day to open that session).
 struct ProgressTabView: View {
     @Environment(\.modelContext) private var context
+    @Environment(PRCache.self) private var prCache
     @Query(
         filter: #Predicate<WorkoutSession> { $0.finishedAt != nil },
         sort: \WorkoutSession.startedAt, order: .reverse
@@ -25,7 +26,8 @@ struct ProgressTabView: View {
 
     /// Exercises with history, most recently used first.
     private var tracked: [Exercise] {
-        ExerciseOrdering.recentFirst(exercises.filter(\.hasHistory), lastUsed: \.lastUsed, name: \.name)
+        ExerciseOrdering.recentFirst(exercises.filter(\.hasHistory), lastUsed: { prCache.lastUsed($0.id) },
+                                     name: \.name)
     }
 
     var body: some View {
@@ -131,7 +133,8 @@ struct ProgressTabView: View {
 
     @ViewBuilder
     private var recentPRs: some View {
-        let prs = ProgressSummary.recentPRs(exercises.map { ($0.name, ProgressQueries.prInputs(for: $0)) })
+        let prs = prCache.recentPRs(names: Dictionary(exercises.map { ($0.id, $0.name) },
+                                                      uniquingKeysWith: { a, _ in a }))
         VStack(alignment: .leading, spacing: 8) {
             SectionLabel("Recent PRs")
             GroupedCard {
@@ -168,6 +171,8 @@ struct ProgressTabView: View {
 }
 
 #Preview {
+    let container = try! ModelSchema.makeContainer(inMemory: true)
     ProgressTabView()
-        .modelContainer(try! ModelSchema.makeContainer(inMemory: true))
+        .modelContainer(container)
+        .environment(PRCache.shared(for: container.mainContext))
 }

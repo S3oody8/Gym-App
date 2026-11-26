@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// Per-exercise progress: graph metric/range and the full set history with PR badges.
+/// Per-exercise progress: graph metric/range and the full set history (badges come from `PRCache`).
 @MainActor
 @Observable
 final class ExerciseProgressViewModel {
@@ -17,10 +17,6 @@ final class ExerciseProgressViewModel {
     func points(now: Date = .now) -> [ProgressPoint] {
         ProgressMath.points(metric, sessions: ProgressQueries.sessionInputs(for: exercise),
                             range: range, now: now)
-    }
-
-    var badges: [UUID: PRBadges] {
-        PRDetector.badges(for: ProgressQueries.prInputs(for: exercise))
     }
 
     var history: [(session: WorkoutSession, sets: [WorkoutSet])] {

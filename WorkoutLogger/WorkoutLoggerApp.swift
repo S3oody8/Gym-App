@@ -23,6 +23,8 @@ struct WorkoutLoggerApp: App {
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")
         }
+        // PRs, history rows and last-used dates are built off the main thread at launch.
+        PRCache.shared(for: container.mainContext).warmUp()
     }
 
     var body: some Scene {
@@ -34,6 +36,7 @@ struct WorkoutLoggerApp: App {
                 }
         }
         .modelContainer(container)
+        .environment(PRCache.shared(for: container.mainContext))
         .onChange(of: scenePhase, initial: true) { _, phase in
             guard phase == .active, DebugScenario.current == nil else { return }
             AutoBackup.runIfDue(context: container.mainContext)

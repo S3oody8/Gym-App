@@ -13,6 +13,7 @@ struct ShrugImporter {
 
     func run(_ plan: ShrugPlan, unreadableLines: Int = 0,
              progress: (Int, Int) -> Void = { _, _ in }) async throws -> ShrugImportResult {
+        defer { PRCache.shared(for: context).invalidateAll() }
         var result = ShrugImportResult(skippedTimed: plan.skippedTimed, unreadableLines: unreadableLines)
 
         // Exercises by target name (existing ones are reused, matched trimmed + case-insensitive).

@@ -6,6 +6,7 @@ import SwiftUI
 /// Delete (no history) or archive (has history) by swiping.
 struct ExercisesTabView: View {
     @Environment(\.modelContext) private var context
+    @Environment(PRCache.self) private var prCache
     @Query private var exercises: [Exercise]
     @State private var viewModel = ExerciseLibraryViewModel()
     @State private var editing: Exercise?
@@ -82,8 +83,8 @@ struct ExercisesTabView: View {
 
     @ViewBuilder
     private var list: some View {
-        let active = viewModel.visibleActive(exercises)
-        let archived = viewModel.visibleArchived(exercises)
+        let active = viewModel.visibleActive(exercises) { prCache.lastUsed($0.id) }
+        let archived = viewModel.visibleArchived(exercises) { prCache.lastUsed($0.id) }
         if exercises.isEmpty {
             ContentUnavailableView {
                 Label("No Exercises", systemImage: "dumbbell")
@@ -121,7 +122,7 @@ struct ExercisesTabView: View {
 
     private func row(_ exercise: Exercise) -> some View {
         NavigationLink(value: exercise) {
-            ExerciseRowView(exercise: exercise, query: viewModel.searchText)
+            ExerciseRowView(exercise: exercise, lastUsed: prCache.lastUsed(exercise.id), query: viewModel.searchText)
         }
         .listRowSeparatorTint(Theme.hairline)
         .swipeActions(edge: .leading) {
@@ -150,6 +151,8 @@ struct ExercisesTabView: View {
 }
 
 #Preview {
+    let container = try! ModelSchema.makeContainer(inMemory: true)
     ExercisesTabView()
-        .modelContainer(try! ModelSchema.makeContainer(inMemory: true))
+        .modelContainer(container)
+        .environment(PRCache.shared(for: container.mainContext))
 }

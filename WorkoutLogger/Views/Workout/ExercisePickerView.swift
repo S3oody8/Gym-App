@@ -7,6 +7,7 @@ struct ExercisePickerView: View {
     let onPick: (Exercise) -> Void
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @Environment(PRCache.self) private var prCache
     @Query private var exercises: [Exercise]
     @State private var searchText = ""
     @State private var creating = false
@@ -23,7 +24,7 @@ struct ExercisePickerView: View {
                     Button {
                         pick(exercise)
                     } label: {
-                        ExerciseRowView(exercise: exercise, query: searchText)
+                        ExerciseRowView(exercise: exercise, lastUsed: prCache.lastUsed(exercise.id), query: searchText)
                     }
                     .tint(.primary)
                 }

@@ -8,12 +8,12 @@ struct WorkoutsTabView: View {
     let openWorkout: () -> Void
 
     @Environment(\.modelContext) private var context
+    @Environment(PRCache.self) private var prCache
     @Query(filter: #Predicate<WorkoutSession> { $0.finishedAt == nil }, sort: \WorkoutSession.startedAt, order: .reverse)
     private var activeSessions: [WorkoutSession]
     @Query(filter: #Predicate<WorkoutSession> { $0.finishedAt != nil }, sort: \WorkoutSession.startedAt, order: .reverse)
     private var sessions: [WorkoutSession]
     @Query(sort: \WorkoutTemplate.name) private var templates: [WorkoutTemplate]
-    @Query private var exercises: [Exercise]
 
     @State private var viewModel = HistoryViewModel()
     @State private var path: [WorkoutSession] = []
@@ -42,7 +42,7 @@ struct WorkoutsTabView: View {
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                 }
-                let prCounts = viewModel.prCounts(exercises: exercises, sessions: sessions)
+                let prCounts = prCache.countsBySession
                 ForEach(HistoryGrouping.groups(sessions, date: \.startedAt)) { group in
                     Section {
                         ForEach(group.items) { session in
@@ -190,7 +190,7 @@ struct WorkoutsTabView: View {
     // MARK: History
 
     private func historyRow(_ session: WorkoutSession, prCount: Int) -> some View {
-        HistoryRowView(session: session, prCount: prCount)
+        HistoryRowView(session: session, summary: prCache.summary(for: session), prCount: prCount)
             .overlay { NavigationLink(value: session) { EmptyView() }.opacity(0) }
             .listRowBackground(Color.clear)
             .listRowSeparator(.hidden)

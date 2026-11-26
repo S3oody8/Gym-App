@@ -15,6 +15,8 @@ final class SessionEditorViewModel {
     private let health: WorkoutHealthExporting
     private let healthEnabled: () -> Bool
     private let quickButtonValues: () -> [Int]
+    /// PR badges come from here, never computed while drawing.
+    private let prCache: PRCache
 
     /// Last undoable action, shown in the toast while non-nil.
     private(set) var undoAction: WorkoutUndoAction?
@@ -51,6 +53,7 @@ final class SessionEditorViewModel {
         self.session = session
         self.nameDraft = session.name
         self.store = WorkoutStore(context: context)
+        self.prCache = PRCache.shared(for: context)
         // Tests pass fake alerts: they get their own timer that isn't saved to UserDefaults.
         self.restTimer = restTimer ?? (restAlerts.map {
             RestTimerStore(alerts: $0, settings: settings, defaults: nil)
@@ -104,11 +107,10 @@ final class SessionEditorViewModel {
     /// The "Repeat" quick buttons from Settings (e.g. [1, 2, 3]).
     var quickButtons: [Int] { quickButtonValues() }
 
-    /// PR badges for this entry's sets, computed from the exercise's whole history so edits
-    /// anywhere are reflected immediately.
+    /// PR badges for this entry's sets, over the exercise's whole history (cached; any set
+    /// change invalidates that exercise, so edits anywhere are reflected immediately).
     func prBadges(for entry: SessionExercise) -> [UUID: PRBadges] {
-        guard let exercise = entry.exercise else { return [:] }
-        return PRDetector.badges(for: ProgressQueries.prInputs(for: exercise))
+        prCache.badges(for: entry.exercise?.id)
     }
 
     func canQuickAdd(_ entry: SessionExercise) -> Bool {

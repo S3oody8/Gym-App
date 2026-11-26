@@ -117,8 +117,9 @@ struct ActiveWorkoutView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 WorkoutNameField(viewModel: viewModel, font: .largeTitle.weight(.bold))
+                let startedAt = session.startedAt
                 TimelineView(.periodic(from: .now, by: 30)) { context in
-                    Text(HistoryFormat.minutes(context.date.timeIntervalSince(session.startedAt)))
+                    Text(HistoryFormat.minutes(context.date.timeIntervalSince(startedAt)))
                         .font(.subheadline.monospacedDigit())
                         .foregroundStyle(Theme.textMuted)
                         .fixedSize()

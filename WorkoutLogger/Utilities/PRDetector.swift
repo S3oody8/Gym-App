@@ -8,6 +8,10 @@ import Foundation
 /// - Reps PR: there is at least one earlier set at ≥ this weight, and reps are strictly greater
 ///   than every earlier set at ≥ this weight.
 /// Sets in the exercise's first session never get badges (nothing to beat yet).
+///
+/// One pass with running state: the heaviest weight so far and the best reps at each distinct
+/// weight. The reps check only looks at weights ≥ this one, and an exercise has few distinct
+/// weights, so this is close to O(n) (it was O(n²)).
 enum PRDetector {
     static func badges(for sets: [PRInputSet]) -> [UUID: PRBadges] {
         let ordered = sets
@@ -20,20 +24,24 @@ enum PRDetector {
         guard let firstSession = ordered.first?.sessionID else { return [:] }
 
         var result: [UUID: PRBadges] = [:]
-        var earlier: [SetValues] = []
+        var maxWeight = -Double.infinity
+        var maxRepsByWeight: [Double: Int] = [:]
         for set in ordered {
-            defer { earlier.append(set.values) }
-            guard set.sessionID != firstSession, !earlier.isEmpty else { continue }
-            var badges: PRBadges = []
             let w = set.values.weight
-            if let maxWeight = earlier.map(\.weight).max(), w > maxWeight {
-                badges.insert(.weight)
+            let reps = set.values.reps
+            if set.sessionID != firstSession {
+                var badges: PRBadges = []
+                if w > maxWeight { badges.insert(.weight) }
+                var bestReps: Int?
+                for (weight, r) in maxRepsByWeight where weight >= w {
+                    bestReps = max(bestReps ?? r, r)
+                }
+                if let bestReps, reps > bestReps { badges.insert(.reps) }
+                if !badges.isEmpty { result[set.id] = badges }
             }
-            let atOrAbove = earlier.filter { $0.weight >= w }
-            if let maxReps = atOrAbove.map(\.reps).max(), set.values.reps > maxReps {
-                badges.insert(.reps)
-            }
-            if !badges.isEmpty { result[set.id] = badges }
+            // Update the running state after the comparison.
+            maxWeight = max(maxWeight, w)
+            maxRepsByWeight[w] = max(maxRepsByWeight[w] ?? reps, reps)
         }
         return result
     }

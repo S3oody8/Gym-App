@@ -54,15 +54,20 @@ enum ProgressSummary {
 
     /// RECENT PRs, newest first: every set with a PR badge, limited to `limit`.
     static func recentPRs(_ inputs: [(exerciseName: String, sets: [PRInputSet])], limit: Int = 10) -> [RecentPR] {
-        inputs.flatMap { exercise -> [RecentPR] in
+        let prs = inputs.flatMap { exercise -> [RecentPR] in
             let badges = PRDetector.badges(for: exercise.sets)
             return exercise.sets.compactMap { set in
                 guard let badge = badges[set.id], !badge.isEmpty else { return nil }
                 return RecentPR(id: set.id, exerciseName: exercise.exerciseName, date: set.sessionStart, values: set.values)
             }
         }
-        .sorted { $0.date != $1.date ? $0.date > $1.date : $0.exerciseName < $1.exerciseName }
-        .prefix(limit)
-        .map { $0 }
+        return newestFirst(prs, limit: limit)
+    }
+
+    /// Newest first (ties by exercise name), limited to `limit`.
+    static func newestFirst(_ prs: [RecentPR], limit: Int = 10) -> [RecentPR] {
+        prs.sorted { $0.date != $1.date ? $0.date > $1.date : $0.exerciseName < $1.exerciseName }
+            .prefix(limit)
+            .map { $0 }
     }
 }

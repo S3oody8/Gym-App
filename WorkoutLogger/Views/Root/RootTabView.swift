@@ -73,6 +73,8 @@ struct RootTabView: View {
 }
 
 #Preview {
+    let container = try! ModelSchema.makeContainer(inMemory: true)
     RootTabView()
-        .modelContainer(try! ModelSchema.makeContainer(inMemory: true))
+        .modelContainer(container)
+        .environment(PRCache.shared(for: container.mainContext))
 }

@@ -7,6 +7,11 @@ enum DebugSeeder {
     static func seed(_ scenario: DebugScenario, into context: ModelContext) {
         #if DEBUG
         if [.shrugMapping, .shrugProgress, .shrugSummary, .shrugHistory].contains(scenario) { return }
+        if scenario == .largeHistory {
+            seedLargeHistory(into: context)
+            PRCache.shared(for: context).invalidateAll()
+            return
+        }
         let bench = Exercise(name: "Bench Press", equipment: .barbell, weightIncrement: 2.5)
         let pulldown = Exercise(name: "Lat Pulldown – Neutral", equipment: .cable, weightIncrement: 5)
         let curl = Exercise(name: "Incline DB Curl", equipment: .dumbbell,
@@ -34,7 +39,7 @@ enum DebugSeeder {
             current.entries.first?.sets.append(WorkoutSet(order: 3, weight: 60, reps: 10, type: .drop,
                                                           loggedAt: start.addingTimeInterval(600)))
             add([(65, 11), (65, 9)], of: pulldown, order: 1, to: current, start: start.addingTimeInterval(900))
-        case .exercises, .exerciseEditor, .shrugMapping, .shrugProgress, .shrugSummary, .shrugHistory:
+        case .exercises, .exerciseEditor, .shrugMapping, .shrugProgress, .shrugSummary, .shrugHistory, .largeHistory:
             break
         case .progress, .exerciseProgress:
             let day = 86_400.0
@@ -85,7 +90,49 @@ enum DebugSeeder {
             legs.items.append(TemplateExercise(order: 0, exercise: smith))
         }
         try? context.save()
+        PRCache.shared(for: context).invalidateAll()
         #endif
+    }
+
+    /// About the size of the user's real history: 300 finished workouts over two years,
+    /// 15 exercises, 4 exercises × 5 sets per workout (6,000 sets). Deterministic, so timings
+    /// are comparable between runs. Used by the `largeHistory` scenario and the perf tests.
+    static func seedLargeHistory(into context: ModelContext, sessions sessionCount: Int = 300,
+                                 now: Date = Date(timeIntervalSince1970: 1_795_000_000)) {
+        let names = ["Bench Press", "Incline DB Press", "Chest Fly", "Shoulder Press", "Lateral Raise",
+                     "Lat Pulldown", "Seated Row", "T-Bar Row", "Rear Delt Fly", "Curl",
+                     "Smith Squat", "Leg Press", "Romanian Deadlift", "Leg Curl", "Calf Raise"]
+        let exercises = names.map { Exercise(name: $0, equipment: .machine, weightIncrement: 2.5) }
+        exercises.forEach(context.insert)
+        var seed: UInt64 = 42
+        func random(_ range: Int) -> Int {
+            seed = seed &* 6_364_136_223_846_793_005 &+ 1_442_695_040_888_963_407
+            return Int((seed >> 33) % UInt64(range))
+        }
+        let span = 730.0 * 86_400
+        for i in 0..<sessionCount {
+            let start = now.addingTimeInterval(-span + span * Double(i) / Double(sessionCount))
+            let session = WorkoutSession(name: ["Push", "Pull", "Legs"][i % 3], startedAt: start)
+            context.insert(session)
+            let split = (i % 3) * 5
+            let progress = Double(i) / Double(sessionCount)
+            for slot in 0..<4 {
+                let exercise = exercises[split + (slot + i / 3) % 5]
+                let base = 20 + Double(split + slot) * 4
+                let weight = ((base + base * progress + Double(random(5))) / 2.5).rounded() * 2.5
+                let entry = SessionExercise(order: slot, exercise: exercise)
+                session.entries.append(entry)
+                for index in 0..<5 {
+                    let isDrop = index == 4 && random(3) == 0
+                    entry.sets.append(WorkoutSet(
+                        order: index, weight: isDrop ? weight - 10 : weight - Double(index / 2) * 2.5,
+                        reps: 6 + random(7), rir: random(3), type: isDrop ? .drop : .working,
+                        loggedAt: start.addingTimeInterval(Double(slot * 5 + index) * 150)))
+                }
+            }
+            session.finishedAt = start.addingTimeInterval(20 * 150)
+        }
+        try? context.save()
     }
 
     /// Runs a default Shrug import (convert lb, keep names) from `-shrugFile`, for screenshots.

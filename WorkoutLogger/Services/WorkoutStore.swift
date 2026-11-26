@@ -2,10 +2,13 @@ import Foundation
 import SwiftData
 
 /// All workout mutations. Every mutating call saves immediately (crash safety) and throws if
-/// the save fails; the in-memory change is kept so a retry can persist it.
+/// the save fails; the in-memory change is kept so a retry can persist it. Changes that
+/// affect PRs or history rows invalidate the context's `PRCache`.
 @MainActor
 struct WorkoutStore {
     let context: ModelContext
+
+    private var cache: PRCache { PRCache.shared(for: context) }
 
     func save() throws {
         try context.save()
@@ -38,10 +41,12 @@ struct WorkoutStore {
     /// Finishes the session at the time of its last logged set (`now` if it has no sets).
     func finish(_ session: WorkoutSession, now: Date = .now) throws {
         session.finishedAt = SessionMetrics.finishTime(setTimes: session.allSets.map(\.loggedAt), now: now)
+        cache.invalidate(exerciseID: nil, sessionID: session.id)
         try save()
     }
 
     func discard(_ session: WorkoutSession) throws {
+        cache.invalidate(session: session)
         context.delete(session)
         try save()
     }
@@ -55,6 +60,7 @@ struct WorkoutStore {
         for set in session.allSets {
             set.loggedAt = set.loggedAt.addingTimeInterval(delta)
         }
+        cache.invalidate(session: session)
         try save()
     }
 
@@ -71,6 +77,7 @@ struct WorkoutStore {
                               sets: entry.orderedSets.map(Self.snapshot))
             }
         )
+        cache.invalidate(session: session)
         context.delete(session)
         try save()
         return snapshot
@@ -89,6 +96,7 @@ struct WorkoutStore {
                 entry.sets.append(Self.makeSet(from: set))
             }
         }
+        cache.invalidate(session: session)
         try save()
         return session
     }
@@ -172,6 +180,7 @@ struct WorkoutStore {
             exerciseID: entry.exercise?.id,
             sets: entry.orderedSets.map(Self.snapshot)
         )
+        cache.invalidate(session: session)
         session.entries.removeAll { $0.id == entry.id }
         context.delete(entry)
         renumber(session)
@@ -190,6 +199,7 @@ struct WorkoutStore {
             entry.sets.append(Self.makeSet(from: set))
         }
         renumber(session)
+        cache.invalidate(session: session)
         try save()
     }
 
@@ -201,6 +211,7 @@ struct WorkoutStore {
         let set = WorkoutSet(order: order, weight: values.weight, reps: values.reps,
                              rir: values.rir, type: values.type, loggedAt: date)
         entry.sets.append(set)
+        invalidate(entry)
         try save()
         return set
     }
@@ -210,6 +221,7 @@ struct WorkoutStore {
     func update(_ set: WorkoutSet, to values: SetValues) throws -> SetValues {
         let previous = set.values
         set.values = values
+        invalidate(set.sessionExercise)
         try save()
         return previous
     }
@@ -221,6 +233,7 @@ struct WorkoutStore {
         entry.sets.removeAll { $0.id == set.id }
         context.delete(set)
         renumber(entry)
+        invalidate(entry)
         try save()
         return snapshot
     }
@@ -231,6 +244,7 @@ struct WorkoutStore {
         }
         entry.sets.append(Self.makeSet(from: snapshot))
         renumber(entry)
+        invalidate(entry)
         try save()
     }
 
@@ -254,6 +268,10 @@ struct WorkoutStore {
         var descriptor = FetchDescriptor<Exercise>(predicate: #Predicate { $0.id == id })
         descriptor.fetchLimit = 1
         return try? context.fetch(descriptor).first
+    }
+
+    private func invalidate(_ entry: SessionExercise?) {
+        cache.invalidate(exerciseID: entry?.exercise?.id, sessionID: entry?.session?.id)
     }
 
     private func renumber(_ entry: SessionExercise) {

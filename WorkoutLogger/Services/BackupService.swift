@@ -54,6 +54,7 @@ struct BackupService {
     // MARK: Import
 
     func importBackup(_ file: BackupFile) throws -> ImportSummary {
+        defer { PRCache.shared(for: context).invalidateAll() }
         var summary = ImportSummary()
         let existingExercises = try context.fetch(FetchDescriptor<Exercise>())
         var exerciseByID = Dictionary(existingExercises.map { ($0.id, $0) }, uniquingKeysWith: { a, _ in a })

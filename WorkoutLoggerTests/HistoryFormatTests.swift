@@ -46,10 +46,18 @@ final class HistoryFormatTests: XCTestCase {
 
     func testPRCountsBySession() {
         let s1 = UUID(), s2 = UUID()
-        let a = UUID(), b = UUID(), c = UUID(), d = UUID()
-        let counts = PRCounter.countsBySession(
-            badges: [a: [.weight, .reps], b: .reps, c: .weight, UUID(): .weight],
-            setSessions: [a: s1, b: s1, c: s2, d: s2])
-        XCTAssertEqual(counts, [s1: 2, s2: 1], "a set with two badges counts once; unknown sets ignored")
+        let t0 = Date(timeIntervalSince1970: 1_700_000_000)
+        func set(_ session: UUID, _ day: Double, _ order: Int, _ w: Double, _ r: Int) -> PRInputSet {
+            PRInputSet(id: UUID(), sessionID: session, sessionStart: t0.addingTimeInterval(day * 86_400),
+                       order: order, values: SetValues(weight: w, reps: r))
+        }
+        let s0 = UUID()
+        let sets = [set(s0, 0, 0, 80, 8),
+                    set(s1, 1, 0, 85, 9), set(s1, 1, 1, 70, 12), // weight + reps (counts once), reps
+                    set(s2, 2, 0, 90, 3)]                        // weight
+        let index = ExercisePRIndex(sets: sets)
+        XCTAssertEqual(index.prCountsBySession, [s1: 2, s2: 1], "a set with two badges counts once")
+        XCTAssertEqual(index.prSets.count, 3)
+        XCTAssertEqual(index.lastUsed, t0.addingTimeInterval(2 * 86_400))
     }
 }

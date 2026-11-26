@@ -7,6 +7,7 @@ struct PastWorkoutView: View {
     let session: WorkoutSession
     let onDelete: () -> Void
     @Environment(\.modelContext) private var context
+    @Environment(PRCache.self) private var prCache
     @State private var editing = false
 
     var body: some View {
@@ -66,7 +67,7 @@ struct PastWorkoutView: View {
     }
 
     private func exerciseTable(_ entry: SessionExercise) -> some View {
-        let badges = entry.exercise.map { PRDetector.badges(for: ProgressQueries.prInputs(for: $0)) } ?? [:]
+        let badges = prCache.badges(for: entry.exercise?.id)
         return VStack(alignment: .leading, spacing: 8) {
             Text(entry.exercise?.name ?? "Deleted exercise")
                 .font(.headline)

@@ -12,17 +12,18 @@ final class ExerciseLibraryViewModel {
     var isSearching: Bool { !ExerciseSearch.words(searchText).isEmpty }
 
     /// Not searching: last used first, then by name. Searching: search ranking (SPEC §1).
-    func visibleActive(_ all: [Exercise]) -> [Exercise] {
+    /// `lastUsed` should be a cached lookup (`PRCache.lastUsed`), not the model walk.
+    func visibleActive(_ all: [Exercise], lastUsed: (Exercise) -> Date? = { $0.lastUsed }) -> [Exercise] {
         guard isSearching else {
-            return ExerciseOrdering.recentFirst(all.filter { !$0.isArchived }, lastUsed: \.lastUsed, name: \.name)
+            return ExerciseOrdering.recentFirst(all.filter { !$0.isArchived }, lastUsed: lastUsed, name: \.name)
         }
         return ExerciseSearch.filter(all, query: searchText, name: \.name, isArchived: \.isArchived)
     }
 
     /// Archived exercises, in their own section at the bottom. Search hides them.
-    func visibleArchived(_ all: [Exercise]) -> [Exercise] {
+    func visibleArchived(_ all: [Exercise], lastUsed: (Exercise) -> Date? = { $0.lastUsed }) -> [Exercise] {
         guard !isSearching else { return [] }
-        return ExerciseOrdering.recentFirst(all.filter(\.isArchived), lastUsed: \.lastUsed, name: \.name)
+        return ExerciseOrdering.recentFirst(all.filter(\.isArchived), lastUsed: lastUsed, name: \.name)
     }
 
     /// Deletes an exercise only if it has no history. Returns false otherwise or on save failure.
